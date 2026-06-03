@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { PUBLIC_BASE } from "../../shared/nav-config";
 import { fmtDate, useJournal } from "../../shared/store";
 import type { JournalEntry } from "../../shared/types";
+import { CommentsSection } from "../../shared/comments-section";
 
 /**
  * Journal detail — slug-based lookup, prev/next nav. Body is plain text
@@ -59,6 +60,8 @@ export function JournalDetailPage({ slug }: { slug: string }) {
       <Separator className="my-12 opacity-60" />
 
       <PrevNext prev={prev} next={next} />
+
+      <CommentsSection kind="journal" slug={entry.slug} title="Diskusi" />
     </article>
   );
 }

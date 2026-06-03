@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { DynamicIcon } from "@/features/icon-picker";
 import type { PageBlock } from "./types";
 
 /** Read-only renderer for a single PageBlock. Public surface uses this
@@ -43,6 +44,9 @@ export function BlockRenderer({ block }: { block: PageBlock }) {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {block.items.map((it, i) => (
                 <div key={i} className="rounded-lg border bg-card p-5">
+                  {it.icon && (
+                    <DynamicIcon value={it.icon} size={24} className="mb-3 text-primary" />
+                  )}
                   <h3 className="text-sm font-semibold">{it.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{it.body}</p>
                 </div>

@@ -12,6 +12,7 @@ import { useShowcase } from "../../shared/store";
 import { fmtDate } from "../../shared/store";
 import type { ShowcaseItem } from "../../shared/types";
 import { ShowcaseStats } from "./ShowcaseStats";
+import { CommentsSection } from "../../shared/comments-section";
 
 type Kind = "all" | ShowcaseItem["kind"];
 
@@ -95,6 +96,10 @@ export function ShowcasePage() {
           </div>
         </CardContent>
       </Card>
+
+      <div className="mx-auto max-w-3xl">
+        <CommentsSection kind="showcase" slug="gallery" title="Diskusi" />
+      </div>
     </section>
   );
 }
