@@ -1,14 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { createTemplateStore } from "@/components/templates/_shared/hooks/create-template-store";
-import { pagesReducer } from "@/components/templates/_shared/pages/reducer";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import {
   PagesProvider,
   type PagesStore,
 } from "@/components/templates/_shared/pages/pages-context";
 import type { PageEntry } from "@/components/templates/_shared/pages/types";
-import { landingReducer } from "@/components/templates/_shared/landing/reducer";
+import { pagesReducer } from "@/components/templates/_shared/pages/reducer";
 import {
   LandingProvider,
   type LandingStore,
@@ -16,119 +17,257 @@ import {
 import type { LandingSection } from "@/components/templates/_shared/landing/types";
 import { ADMIN_BASE, PUBLIC_BASE } from "./nav-config";
 import type { Action, State } from "./types";
-import { SEED_STATE } from "./seed";
 
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "hydrate":
-      // Shallow-merge with SEED_STATE so any field added in a newer
-      // schema (e.g. AB-wave landingSections) gets its default when
-      // hydrating from an older localStorage payload.
-      return { ...SEED_STATE, ...action.state };
-    case "reset":
-      return SEED_STATE;
-    case "PAGE_CREATE":
-    case "PAGE_UPDATE":
-    case "PAGE_DELETE":
-    case "PAGE_REORDER_BLOCK":
-    case "PAGE_SECTION_UPSERT":
-    case "PAGE_SECTION_DELETE": {
-      const next = pagesReducer({ pages: state.pages }, action);
-      return { ...state, pages: next.pages };
-    }
-    case "LANDING_UPSERT":
-    case "LANDING_DELETE": {
-      const next = landingReducer({ landingSections: state.landingSections }, action);
-      return { ...state, landingSections: next.landingSections };
-    }
-    case "content.upsert": {
-      const idx = state.contents.findIndex((c) => c.id === action.item.id);
-      const contents =
-        idx >= 0
-          ? state.contents.map((c) => (c.id === action.item.id ? action.item : c))
-          : [action.item, ...state.contents];
-      return { ...state, contents };
-    }
-    case "content.delete":
-      return { ...state, contents: state.contents.filter((c) => c.id !== action.id) };
-    case "voice.upsert": {
-      const idx = state.voices.findIndex((v) => v.id === action.voice.id);
-      const voices =
-        idx >= 0 ? state.voices.map((v) => (v.id === action.voice.id ? action.voice : v)) : [action.voice, ...state.voices];
-      return { ...state, voices };
-    }
-    case "voice.delete":
-      return { ...state, voices: state.voices.filter((v) => v.id !== action.id) };
-    case "script.upsert": {
-      const idx = state.scripts.findIndex((s) => s.id === action.script.id);
-      const scripts =
-        idx >= 0
-          ? state.scripts.map((s) => (s.id === action.script.id ? action.script : s))
-          : [action.script, ...state.scripts];
-      return { ...state, scripts };
-    }
-    case "script.delete":
-      return { ...state, scripts: state.scripts.filter((s) => s.id !== action.id) };
-    case "carousel.upsert": {
-      const idx = state.carousels.findIndex((c) => c.id === action.carousel.id);
-      const carousels =
-        idx >= 0
-          ? state.carousels.map((c) => (c.id === action.carousel.id ? action.carousel : c))
-          : [action.carousel, ...state.carousels];
-      return { ...state, carousels };
-    }
-    case "carousel.delete":
-      return { ...state, carousels: state.carousels.filter((c) => c.id !== action.id) };
-    case "asset.upsert": {
-      const idx = state.assets.findIndex((a) => a.id === action.asset.id);
-      const assets =
-        idx >= 0 ? state.assets.map((a) => (a.id === action.asset.id ? action.asset : a)) : [action.asset, ...state.assets];
-      return { ...state, assets };
-    }
-    case "asset.delete":
-      return { ...state, assets: state.assets.filter((a) => a.id !== action.id) };
-    case "newsletter.upsert": {
-      const idx = state.newsletters.findIndex((n) => n.id === action.issue.id);
-      const newsletters =
-        idx >= 0
-          ? state.newsletters.map((n) => (n.id === action.issue.id ? action.issue : n))
-          : [action.issue, ...state.newsletters];
-      return { ...state, newsletters };
-    }
-    case "newsletter.delete":
-      return { ...state, newsletters: state.newsletters.filter((n) => n.id !== action.id) };
-    case "performance.upsert": {
-      const idx = state.performance.findIndex((p) => p.id === action.metric.id);
-      const performance =
-        idx >= 0
-          ? state.performance.map((p) => (p.id === action.metric.id ? action.metric : p))
-          : [action.metric, ...state.performance];
-      return { ...state, performance };
-    }
-    case "performance.delete":
-      return { ...state, performance: state.performance.filter((p) => p.id !== action.id) };
-    case "comment.upsert": {
-      const idx = state.commentDrafts.findIndex((c) => c.id === action.draft.id);
-      const commentDrafts =
-        idx >= 0
-          ? state.commentDrafts.map((c) => (c.id === action.draft.id ? action.draft : c))
-          : [action.draft, ...state.commentDrafts];
-      return { ...state, commentDrafts };
-    }
-    case "comment.delete":
-      return { ...state, commentDrafts: state.commentDrafts.filter((c) => c.id !== action.id) };
+// Convex-backed store. Replaces the old localStorage reducer: `state` is
+// assembled from live Convex queries; `dispatch` routes each action to the
+// matching Convex mutation. Consuming slices are UNCHANGED — they still call
+// useStore()/useX()/dispatch(action).
+//
+// id mapping: frontend objects key by `id` (string); Convex keys by `_id`.
+// On read we map `_id` -> `id`. On upsert we pass `id` only when it's a known
+// Convex id (existing row); a fresh nid -> insert.
 
-    default:
-      return state;
-  }
+type Ctx = { state: State; dispatch: (a: Action) => void; ready: boolean; progress: number };
+const StoreCtx = React.createContext<Ctx | null>(null);
+
+const withId = <T,>(rows: ReadonlyArray<Record<string, unknown>> | undefined): T[] =>
+  ((rows ?? []) as Array<Record<string, unknown>>).map((r) => ({ ...r, id: r._id })) as T[];
+
+function Provider({ children }: { children: React.ReactNode }) {
+  const contents = useQuery(api.contents.list, {});
+  const voices = useQuery(api.voices.list, {});
+  const scripts = useQuery(api.scripts.list, {});
+  const carousels = useQuery(api.carousels.list, {});
+  const assets = useQuery(api.assets.list, {});
+  const newsletters = useQuery(api.newsletters.list, {});
+  const performance = useQuery(api.performance.list, {});
+  const comments = useQuery(api.comments.list, {});
+  const packages = useQuery(api.packages.list, {});
+  const showcase = useQuery(api.showcase.list, {});
+  const journal = useQuery(api.journal.list, {});
+  const testimonials = useQuery(api.testimonials.list, {});
+  const featuredClients = useQuery(api.featuredClients.list, {});
+  const monSources = useQuery(api.monetization.listSources, {});
+  const monMonths = useQuery(api.monetization.listMonths, {});
+  const payouts = useQuery(api.monetization.listPayouts, {});
+  const pageRows = useQuery(api.pages.list, {});
+  const landingRows = useQuery(api.landing.list, {});
+
+  const queries = [
+    contents, voices, scripts, carousels, assets, newsletters, performance,
+    comments, packages, showcase, journal, testimonials, featuredClients,
+    monSources, monMonths, payouts, pageRows, landingRows,
+  ];
+  const ready = queries.every((q) => q !== undefined);
+  const progress = Math.round((queries.filter((q) => q !== undefined).length / queries.length) * 100);
+
+  const state = React.useMemo<State>(
+    () => ({
+      contents: withId(contents),
+      voices: withId(voices),
+      scripts: withId(scripts),
+      carousels: withId(carousels),
+      assets: withId(assets),
+      newsletters: withId(newsletters),
+      performance: withId(performance),
+      commentDrafts: withId(comments),
+      packages: withId(packages),
+      showcase: withId(showcase),
+      journal: withId(journal),
+      testimonials: withId(testimonials),
+      featuredClients: withId(featuredClients),
+      monetizationSources: withId(monSources),
+      monetizationMonths: withId(monMonths),
+      payouts: withId(payouts),
+      pages: (pageRows ?? []) as PageEntry[],
+      landingSections: (landingRows ?? []) as LandingSection[],
+    }),
+    [contents, voices, scripts, carousels, assets, newsletters, performance, comments, packages, showcase, journal, testimonials, featuredClients, monSources, monMonths, payouts, pageRows, landingRows],
+  );
+
+  // ---- mutations ----
+  const mContentUpsert = useMutation(api.contents.upsert);
+  const mContentRemove = useMutation(api.contents.remove);
+  const mVoiceUpsert = useMutation(api.voices.upsert);
+  const mVoiceRemove = useMutation(api.voices.remove);
+  const mScriptUpsert = useMutation(api.scripts.upsert);
+  const mScriptRemove = useMutation(api.scripts.remove);
+  const mCarouselUpsert = useMutation(api.carousels.upsert);
+  const mCarouselRemove = useMutation(api.carousels.remove);
+  const mAssetUpsert = useMutation(api.assets.upsert);
+  const mAssetRemove = useMutation(api.assets.remove);
+  const mNewsUpsert = useMutation(api.newsletters.upsert);
+  const mNewsRemove = useMutation(api.newsletters.remove);
+  const mPerfUpsert = useMutation(api.performance.upsert);
+  const mPerfRemove = useMutation(api.performance.remove);
+  const mCommentUpsert = useMutation(api.comments.upsert);
+  const mCommentRemove = useMutation(api.comments.remove);
+  const mPageUpsert = useMutation(api.pages.upsert);
+  const mPageRemove = useMutation(api.pages.remove);
+  const mLandingUpsert = useMutation(api.landing.upsert);
+  const mLandingRemove = useMutation(api.landing.remove);
+
+  const knownIds = React.useMemo(
+    () => ({
+      contents: new Set(state.contents.map((c) => c.id)),
+      voices: new Set(state.voices.map((v) => v.id)),
+      scripts: new Set(state.scripts.map((s) => s.id)),
+      carousels: new Set(state.carousels.map((c) => c.id)),
+      assets: new Set(state.assets.map((a) => a.id)),
+      newsletters: new Set(state.newsletters.map((n) => n.id)),
+      performance: new Set(state.performance.map((p) => p.id)),
+      commentDrafts: new Set(state.commentDrafts.map((c) => c.id)),
+    }),
+    [state],
+  );
+
+  const dispatch = React.useCallback(
+    (action: Action) => {
+      const fail = (e: unknown) => console.error(`[store] ${action.type} failed`, e);
+      switch (action.type) {
+        case "content.upsert": {
+          const { id, ...d } = action.item;
+          void (knownIds.contents.has(id)
+            ? mContentUpsert({ id: id as Id<"kreatorContents">, ...d })
+            : mContentUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "content.delete":
+          void mContentRemove({ id: action.id as Id<"kreatorContents"> }).catch(fail);
+          break;
+
+        case "voice.upsert": {
+          const { id, ...d } = action.voice;
+          void (knownIds.voices.has(id)
+            ? mVoiceUpsert({ id: id as Id<"kreatorVoices">, ...d })
+            : mVoiceUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "voice.delete":
+          void mVoiceRemove({ id: action.id as Id<"kreatorVoices"> }).catch(fail);
+          break;
+
+        case "script.upsert": {
+          const { id, ...d } = action.script;
+          void (knownIds.scripts.has(id)
+            ? mScriptUpsert({ id: id as Id<"kreatorScripts">, ...d })
+            : mScriptUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "script.delete":
+          void mScriptRemove({ id: action.id as Id<"kreatorScripts"> }).catch(fail);
+          break;
+
+        case "carousel.upsert": {
+          const { id, ...d } = action.carousel;
+          void (knownIds.carousels.has(id)
+            ? mCarouselUpsert({ id: id as Id<"kreatorCarousels">, ...d })
+            : mCarouselUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "carousel.delete":
+          void mCarouselRemove({ id: action.id as Id<"kreatorCarousels"> }).catch(fail);
+          break;
+
+        case "asset.upsert": {
+          const { id, ...d } = action.asset;
+          void (knownIds.assets.has(id)
+            ? mAssetUpsert({ id: id as Id<"kreatorAssets">, ...d })
+            : mAssetUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "asset.delete":
+          void mAssetRemove({ id: action.id as Id<"kreatorAssets"> }).catch(fail);
+          break;
+
+        case "newsletter.upsert": {
+          const { id, ...d } = action.issue;
+          void (knownIds.newsletters.has(id)
+            ? mNewsUpsert({ id: id as Id<"kreatorNewsletters">, ...d })
+            : mNewsUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "newsletter.delete":
+          void mNewsRemove({ id: action.id as Id<"kreatorNewsletters"> }).catch(fail);
+          break;
+
+        case "performance.upsert": {
+          const { id, ...d } = action.metric;
+          void (knownIds.performance.has(id)
+            ? mPerfUpsert({ id: id as Id<"kreatorPerformance">, ...d })
+            : mPerfUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "performance.delete":
+          void mPerfRemove({ id: action.id as Id<"kreatorPerformance"> }).catch(fail);
+          break;
+
+        case "comment.upsert": {
+          const { id, ...d } = action.draft;
+          void (knownIds.commentDrafts.has(id)
+            ? mCommentUpsert({ id: id as Id<"kreatorComments">, ...d })
+            : mCommentUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "comment.delete":
+          void mCommentRemove({ id: action.id as Id<"kreatorComments"> }).catch(fail);
+          break;
+
+        case "PAGE_DELETE":
+          void mPageRemove({ entryId: action.payload.id }).catch(fail);
+          break;
+        case "PAGE_CREATE":
+        case "PAGE_UPDATE":
+        case "PAGE_REORDER_BLOCK":
+        case "PAGE_SECTION_UPSERT":
+        case "PAGE_SECTION_DELETE": {
+          const next = pagesReducer({ pages: state.pages }, action);
+          const pid =
+            (action.payload as { id?: string; pageId?: string }).id ??
+            (action.payload as { pageId?: string }).pageId;
+          const entry = next.pages.find((p) => p.id === pid);
+          if (entry) void mPageUpsert({ entryId: entry.id, slug: entry.slug, data: entry }).catch(fail);
+          break;
+        }
+
+        case "LANDING_UPSERT": {
+          const s = action.payload as LandingSection;
+          void mLandingUpsert({ sectionId: s.id, data: s }).catch(fail);
+          break;
+        }
+        case "LANDING_DELETE":
+          void mLandingRemove({ sectionId: (action.payload as { id: string }).id }).catch(fail);
+          break;
+
+        case "hydrate":
+        case "reset":
+          // Convex is the source of truth — no-op.
+          break;
+      }
+    },
+    [knownIds, state.pages], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  const value = React.useMemo<Ctx>(
+    () => ({ state, dispatch, ready, progress }),
+    [state, dispatch, ready, progress],
+  );
+  return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
 }
 
-const { Provider, useStore } = createTemplateStore<State, Action>({
-  storageKey: "kreator:state:v4-landing-sync",
-  channel: "kreator:sync",
-  seed: SEED_STATE,
-  reducer,
-});
+function useStore() {
+  const c = React.useContext(StoreCtx);
+  if (!c) throw new Error("useStore must be inside <StoreProvider>");
+  return c;
+}
 
 function PagesAdapter({ children }: { children: React.ReactNode }) {
   const { state, dispatch } = useStore();
@@ -140,8 +279,10 @@ function PagesAdapter({ children }: { children: React.ReactNode }) {
       remove: (id: string) => dispatch({ type: "PAGE_DELETE", payload: { id } }),
       reorderBlock: (id, from, to) =>
         dispatch({ type: "PAGE_REORDER_BLOCK", payload: { id, from, to } }),
-      upsertSection: (pageId, section) => dispatch({ type: "PAGE_SECTION_UPSERT", payload: { pageId, section } }),
-      removeSection: (pageId, sectionId) => dispatch({ type: "PAGE_SECTION_DELETE", payload: { pageId, sectionId } }),
+      upsertSection: (pageId, section) =>
+        dispatch({ type: "PAGE_SECTION_UPSERT", payload: { pageId, section } }),
+      removeSection: (pageId, sectionId) =>
+        dispatch({ type: "PAGE_SECTION_DELETE", payload: { pageId, sectionId } }),
     }),
     [state.pages, dispatch],
   );
