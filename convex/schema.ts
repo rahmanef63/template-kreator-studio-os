@@ -2,6 +2,7 @@ import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { commentsTables } from "./features/comments/_schema";
+import { notionTables } from "./features/notion/_schema";
 
 // Kreator Studio OS — full schema (Convex target).
 // authTables = @convex-dev/auth. Content tables mirror the localStorage shape
@@ -34,6 +35,7 @@ const MONETIZATION_KIND = v.union(
 export default defineSchema({
   ...authTables,
   ...commentsTables,
+  ...notionTables,
 
   // --- production tooling (admin CRUD, feeds public posts) ---
   kreatorContents: defineTable({

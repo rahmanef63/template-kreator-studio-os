@@ -1,6 +1,7 @@
 import {
   BarChart3,
   CalendarDays,
+  Database,
   DollarSign,
   FileImage,
   FileText,
@@ -12,6 +13,7 @@ import {
   MessageSquare,
   Mic,
   Newspaper,
+  NotebookPen,
   Settings,
   Wand2,
 } from "lucide-react";
@@ -98,6 +100,8 @@ export function buildAdminPrimaryNav(state: State): AdminNavItem[] {
     { id: "monetization",label: "Monetization",href: `${ADMIN_BASE}/monetization`, icon: DollarSign,      count: null },
     { id: "newsletter", label: "Newsletter",  href: `${ADMIN_BASE}/newsletter`,    icon: Mail,            count: newsletterDrafts || null },
     { id: "comments",   label: "Comments",    href: `${ADMIN_BASE}/comments`,      icon: MessageSquare,   count: pendingComments || null },
+    { id: "notes",      label: "Notes",       href: `${ADMIN_BASE}/notes`,         icon: NotebookPen,     count: null },
+    { id: "database",   label: "Database",    href: `${ADMIN_BASE}/database`,      icon: Database,        count: null },
   ];
 }
 
