@@ -9,8 +9,26 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: { default: "kreator-studio-os", template: "%s — kreator-studio-os" },
-  description: "Built with rahman-resources kitab.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"),
+  ),
+  title: { default: "Kreator Studio OS", template: "%s — Kreator Studio OS" },
+  description:
+    "Website OS for content creators, artists, writers & editors — showcase + journal, rich content system, creator dashboard. Free, clone-to-own.",
+  openGraph: {
+    title: "Kreator Studio OS",
+    description:
+      "Website OS for content creators, artists, writers & editors — showcase + journal, rich content system, creator dashboard. Free, clone-to-own.",
+    type: "website",
+    siteName: "Kreator Studio OS",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kreator Studio OS",
+    description:
+      "Website OS for content creators, artists, writers & editors — showcase + journal, rich content system, creator dashboard. Free, clone-to-own.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
