@@ -51,6 +51,7 @@ interface Deps {
   showcase: ShowcaseItem[];
   journal: JournalEntry[];
   featuredClients: FeaturedClient[];
+  onSubscribe?: (email: string) => Promise<{ ok: boolean; notice?: string }>;
 }
 
 /**
@@ -173,7 +174,7 @@ export function renderLanding(section: LandingSection, deps: Deps) {
     case "newsletter":
       return (
         <LandingSectionShell section={section}>
-          <NewsletterSection section={section} placeholder="email@kamu.com" buttonLabel="Subscribe" />
+          <NewsletterSection section={section} placeholder="email@kamu.com" buttonLabel="Subscribe" onSubscribe={deps.onSubscribe} />
         </LandingSectionShell>
       );
 
