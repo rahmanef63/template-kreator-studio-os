@@ -108,6 +108,10 @@ export type PricingPackage = {
   turnaroundDays: number;
   featured?: boolean;
   badge?: string;
+  /** Cart identity + server re-price key (storefront-checkout). */
+  slug?: string;
+  /** Fixed IDR amount — absent = quote-only package (not purchasable). */
+  priceNumber?: number;
 };
 
 /** Showcase item — past work visual (carousel result, video thumb, campaign). */

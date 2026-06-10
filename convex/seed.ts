@@ -60,10 +60,11 @@ const COMMENTS = [
 ];
 
 const PACKAGES = [
-  { name: "Newsletter Sponsor", tagline: "Sponsorship native di issue mingguan.", price: "Rp 8jt", period: "/issue", bullets: ["1 dedicated section di newsletter (~280 word)", "Distribusi ke 12K+ subscribers (38% open rate)", "Brief call 45 menit + 1 revisi draft", "UTM tracking + report performa H+7"], turnaroundDays: 7 },
-  { name: "Carousel Pack", tagline: "5 carousel siap-post untuk brand kamu.", price: "Rp 12jt", period: "/pack", bullets: ["5 carousel (8 slide each) — desain + copy", "2 round revisi, file Figma + PNG export", "Caption + hashtag set per carousel", "Bonus: 1 reel script repurposed"], turnaroundDays: 14, featured: true, badge: "Paling laku" },
-  { name: "Custom Production", tagline: "End-to-end content untuk launch campaign.", price: "Mulai 35jt", period: "/campaign", bullets: ["Strategy sprint 2 minggu — positioning + hook", "10–15 piece content (mix carousel/reel/long-form)", "Shooting day di Jakarta (kru + B-roll)", "Distribution plan 30 hari + weekly check-in"], turnaroundDays: 45 },
-  { name: "Strategy Sprint", tagline: "Audit + roadmap 90 hari untuk creator/brand.", price: "Rp 6jt", period: "/sprint", bullets: ["Audit 30 post terakhir + content pillars", "Roadmap 90 hari (kalender + KPI)", "Workshop 2 jam (recording disertakan)", "Follow-up async 14 hari (Slack/WhatsApp)"], turnaroundDays: 10 },
+  { name: "Newsletter Sponsor", slug: "newsletter-sponsor", priceNumber: 8_000_000, tagline: "Sponsorship native di issue mingguan.", price: "Rp 8jt", period: "/issue", bullets: ["1 dedicated section di newsletter (~280 word)", "Distribusi ke 12K+ subscribers (38% open rate)", "Brief call 45 menit + 1 revisi draft", "UTM tracking + report performa H+7"], turnaroundDays: 7 },
+  { name: "Carousel Pack", slug: "carousel-pack", priceNumber: 12_000_000, tagline: "5 carousel siap-post untuk brand kamu.", price: "Rp 12jt", period: "/pack", bullets: ["5 carousel (8 slide each) — desain + copy", "2 round revisi, file Figma + PNG export", "Caption + hashtag set per carousel", "Bonus: 1 reel script repurposed"], turnaroundDays: 14, featured: true, badge: "Paling laku" },
+  // Custom Production = quote-only (no priceNumber) — checkout rejects it; CTA stays "Book brief call".
+  { name: "Custom Production", slug: "custom-production", tagline: "End-to-end content untuk launch campaign.", price: "Mulai 35jt", period: "/campaign", bullets: ["Strategy sprint 2 minggu — positioning + hook", "10–15 piece content (mix carousel/reel/long-form)", "Shooting day di Jakarta (kru + B-roll)", "Distribution plan 30 hari + weekly check-in"], turnaroundDays: 45 },
+  { name: "Strategy Sprint", slug: "strategy-sprint", priceNumber: 6_000_000, tagline: "Audit + roadmap 90 hari untuk creator/brand.", price: "Rp 6jt", period: "/sprint", bullets: ["Audit 30 post terakhir + content pillars", "Roadmap 90 hari (kalender + KPI)", "Workshop 2 jam (recording disertakan)", "Follow-up async 14 hari (Slack/WhatsApp)"], turnaroundDays: 10 },
 ];
 
 const SHOWCASE = [
@@ -294,6 +295,30 @@ export const syncShowcaseImages = mutation({
       const existing = rows.find((r) => r.title === s.title);
       if (existing && !existing.image) {
         await ctx.db.patch(existing._id, { image: s.image });
+        patched++;
+      }
+    }
+    return { patched };
+  },
+});
+
+// Additive commerce backfill for already-seeded deployments: gives existing
+// kreatorPackages rows their `slug` + `priceNumber` from the seed lineup
+// (matched by unique name) ONLY when missing. Idempotent; never overwrites.
+export const syncPackagesCommerce = mutation({
+  args: {},
+  handler: async (ctx) => {
+    let patched = 0;
+    const rows = await ctx.db.query("kreatorPackages").collect();
+    for (const p of PACKAGES) {
+      const existing = rows.find((r) => r.name === p.name);
+      if (!existing) continue;
+      const patch: { slug?: string; priceNumber?: number } = {};
+      if (!existing.slug && p.slug) patch.slug = p.slug;
+      const seedPrice = (p as { priceNumber?: number }).priceNumber;
+      if (!existing.priceNumber && seedPrice) patch.priceNumber = seedPrice;
+      if (Object.keys(patch).length > 0) {
+        await ctx.db.patch(existing._id, patch);
         patched++;
       }
     }

@@ -17,6 +17,8 @@ export const upsert = mutation({
     turnaroundDays: v.number(),
     featured: v.optional(v.boolean()),
     badge: v.optional(v.string()),
+    slug: v.optional(v.string()),
+    priceNumber: v.optional(v.number()),
   },
   handler: async (ctx, { id, ...data }) => {
     if (id) {

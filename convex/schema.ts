@@ -3,6 +3,7 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { commentsTables } from "./features/comments/_schema";
 import { notionTables } from "./features/notion/_schema";
+import { paymentTables } from "./features/payment/_schema";
 
 // Kreator Studio OS — full schema (Convex target).
 // authTables = @convex-dev/auth. Content tables mirror the localStorage shape
@@ -36,6 +37,7 @@ export default defineSchema({
   ...authTables,
   ...commentsTables,
   ...notionTables,
+  ...paymentTables,
 
   // --- production tooling (admin CRUD, feeds public posts) ---
   kreatorContents: defineTable({
@@ -124,7 +126,35 @@ export default defineSchema({
     turnaroundDays: v.number(),
     featured: v.optional(v.boolean()),
     badge: v.optional(v.string()),
+    // Commerce (additive): slug = cart identity + server re-price key;
+    // priceNumber = fixed IDR amount. Packages without priceNumber are
+    // quote-only ("Mulai 35jt") and can't be added to the cart.
+    slug: v.optional(v.string()),
+    priceNumber: v.optional(v.number()),
   }),
+
+  // Guest checkout orders (storefront-checkout + doku-payment). orderId is
+  // the unguessable capability token for /order/[id]; joins paymentOrders.
+  kreatorOrders: defineTable({
+    orderId: v.string(),
+    buyer: v.object({
+      name: v.string(),
+      email: v.string(),
+      phone: v.optional(v.string()),
+    }),
+    items: v.array(
+      v.object({
+        slug: v.string(),
+        name: v.string(),
+        qty: v.number(),
+        price: v.number(),
+        priceLabel: v.string(),
+      }),
+    ),
+    totalLabel: v.string(),
+    status: v.string(),
+    ts: v.number(),
+  }).index("by_orderId", ["orderId"]),
 
   kreatorShowcase: defineTable({
     title: v.string(),

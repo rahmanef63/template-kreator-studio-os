@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Clock, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Clock, ShoppingCart, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Reveal, Stagger } from "@/components/templates/_shared/motion";
+import { useCart } from "@/features/storefront-checkout";
 import { PUBLIC_BASE } from "../../shared/nav-config";
 import { usePackages } from "../../shared/store";
 import type { PricingPackage } from "../../shared/types";
@@ -55,6 +56,17 @@ export function PricingPage() {
 }
 
 function PackageCard({ pkg }: { pkg: PricingPackage }) {
+  const { add } = useCart();
+  const [added, setAdded] = React.useState(false);
+  const purchasable = Boolean(pkg.slug && pkg.priceNumber);
+
+  function quickAdd() {
+    if (!pkg.slug || !pkg.priceNumber) return;
+    add({ slug: pkg.slug, name: pkg.name, price: pkg.priceNumber, priceLabel: pkg.price }, 1);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1400);
+  }
+
   return (
     <Card
       className={`h-full transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg ${
@@ -89,11 +101,29 @@ function PackageCard({ pkg }: { pkg: PricingPackage }) {
           <Clock className="size-3" />
           Turnaround ~{pkg.turnaroundDays} hari kerja
         </div>
-        <Button asChild variant={pkg.featured ? "default" : "outline"} className="w-full">
-          <Link href={`${PUBLIC_BASE}/about`}>
-            Mulai diskusi <ArrowRight className="size-4" />
-          </Link>
-        </Button>
+        {purchasable ? (
+          <Button
+            variant={added ? "secondary" : pkg.featured ? "default" : "outline"}
+            className="w-full"
+            onClick={quickAdd}
+          >
+            {added ? (
+              <>
+                <Check className="size-4" /> Masuk keranjang ✓
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="size-4" /> Tambah ke keranjang
+              </>
+            )}
+          </Button>
+        ) : (
+          <Button asChild variant={pkg.featured ? "default" : "outline"} className="w-full">
+            <Link href={`${PUBLIC_BASE}/about`}>
+              Mulai diskusi <ArrowRight className="size-4" />
+            </Link>
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

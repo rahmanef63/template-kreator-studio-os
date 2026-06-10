@@ -5,6 +5,7 @@ import { Suspense, type ReactNode } from "react";
 import { SiteShell } from "@/components/templates/_shared/ui/site-shell";
 import { PublicChrome } from "@/components/public-chrome";
 import { ThemePresetSwitcher } from "@/features/theme-presets";
+import { CartProvider } from "@/features/storefront-checkout";
 import { StoreProvider } from "@/components/templates/kreator-studio/shared/store";
 import { SiteLoader } from "@/components/site-loader";
 import { DEFAULT_SITE_CONFIG } from "@/components/templates/kreator-studio/shared/site-config";
@@ -48,10 +49,12 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <Suspense fallback={null}>
       <StoreProvider>
+      <CartProvider storageKey="kreator-cart">
       <SiteLoader brandLetter={DEFAULT_SITE_CONFIG.brandLetter} />
         <PublicChrome>{children}</PublicChrome>
       <DemoRibbon />
         <AiChatFab brand={DEFAULT_SITE_CONFIG.brandName} />
+      </CartProvider>
         </StoreProvider>
     </Suspense>
   );

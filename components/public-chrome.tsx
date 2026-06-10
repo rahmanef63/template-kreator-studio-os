@@ -5,6 +5,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { SiteShell } from "@/components/templates/_shared/ui/site-shell";
 import { ThemePresetSwitcher } from "@/features/theme-presets";
+import { CartWidget } from "@/features/storefront-checkout";
 import { DEFAULT_SITE_CONFIG } from "@/components/templates/kreator-studio/shared/site-config";
 import {
   FOOTER_COLUMNS,
@@ -37,7 +38,12 @@ export function PublicChrome({ children }: { children: ReactNode }) {
       homeHref={PUBLIC_BASE}
       navItems={PUBLIC_NAV}
       cta={PUBLIC_CTA}
-      navExtras={<ThemePresetSwitcher />}
+      navExtras={
+        <>
+          <CartWidget checkoutHref={`${PUBLIC_BASE}/checkout`} />
+          <ThemePresetSwitcher />
+        </>
+      }
       footerColumns={FOOTER_COLUMNS}
       footerTagline={tagline}
       copyrightHolder={brand.brandName}
