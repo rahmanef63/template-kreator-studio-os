@@ -24,6 +24,7 @@ export const upsert = mutation({
     metric: v.string(),
     gradient: v.string(),
     emoji: v.string(),
+    image: v.optional(v.string()),
     publishedAt: v.number(),
   },
   handler: async (ctx, { id, ...data }) => {

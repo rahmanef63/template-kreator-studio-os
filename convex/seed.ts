@@ -67,11 +67,11 @@ const PACKAGES = [
 ];
 
 const SHOWCASE = [
-  { title: "Launch Tokopedia Seller Center", kind: "campaign" as const, client: "Tokopedia", blurb: "8-piece campaign untuk relaunch seller dashboard. Mix carousel + reel + long-form.", metric: "2.4M reach", gradient: "from-emerald-500/40 via-teal-500/30 to-cyan-500/40", emoji: "🛒", publishedAt: day(12) },
-  { title: "Carousel — 10 tools creator 2026", kind: "carousel" as const, client: "Editorial", blurb: "8 slide saved 14K kali, repost ke 6 publikasi creator economy.", metric: "186K saves", gradient: "from-fuchsia-500/40 via-pink-500/30 to-rose-500/40", emoji: "🎨", publishedAt: day(20) },
-  { title: "Reel — Cara plan content 1 jam", kind: "video" as const, client: "Editorial", blurb: "POV-style reel yang viral di tiga platform sekaligus.", metric: "1.2M views", gradient: "from-amber-500/40 via-orange-500/30 to-red-500/40", emoji: "🎬", publishedAt: day(28) },
+  { title: "Launch Tokopedia Seller Center", kind: "campaign" as const, client: "Tokopedia", blurb: "8-piece campaign untuk relaunch seller dashboard. Mix carousel + reel + long-form.", metric: "2.4M reach", gradient: "from-emerald-500/40 via-teal-500/30 to-cyan-500/40", emoji: "🛒", image: "https://picsum.photos/seed/kreator-tokopedia-seller-center/800/600", publishedAt: day(12) },
+  { title: "Carousel — 10 tools creator 2026", kind: "carousel" as const, client: "Editorial", blurb: "8 slide saved 14K kali, repost ke 6 publikasi creator economy.", metric: "186K saves", gradient: "from-fuchsia-500/40 via-pink-500/30 to-rose-500/40", emoji: "🎨", image: "https://picsum.photos/seed/kreator-10-tools-creator/800/600", publishedAt: day(20) },
+  { title: "Reel — Cara plan content 1 jam", kind: "video" as const, client: "Editorial", blurb: "POV-style reel yang viral di tiga platform sekaligus.", metric: "1.2M views", gradient: "from-amber-500/40 via-orange-500/30 to-red-500/40", emoji: "🎬", image: "https://picsum.photos/seed/kreator-plan-content-1-jam/800/600", publishedAt: day(28) },
   { title: "Newsletter Issue #38 — BTS launch", kind: "newsletter" as const, client: "Editorial", blurb: "Long-form breakdown launch creator OS — 42% open, 6.2% click.", metric: "8.1K opens", gradient: "from-indigo-500/40 via-violet-500/30 to-purple-500/40", emoji: "✉️", publishedAt: day(35) },
-  { title: "Campaign — Bibit financial literacy", kind: "campaign" as const, client: "Bibit", blurb: "12-piece edukasi investasi untuk audiens Gen-Z, mix story + carousel.", metric: "920K reach", gradient: "from-sky-500/40 via-blue-500/30 to-indigo-500/40", emoji: "📈", publishedAt: day(48) },
+  { title: "Campaign — Bibit financial literacy", kind: "campaign" as const, client: "Bibit", blurb: "12-piece edukasi investasi untuk audiens Gen-Z, mix story + carousel.", metric: "920K reach", gradient: "from-sky-500/40 via-blue-500/30 to-indigo-500/40", emoji: "📈", image: "https://picsum.photos/seed/kreator-bibit-financial-literacy/800/600", publishedAt: day(48) },
   { title: "Carousel — 5 mistake creator pemula", kind: "carousel" as const, client: "Editorial", blurb: "Mini-essay format, jadi entry-point banyak follower baru.", metric: "82K saves", gradient: "from-lime-500/40 via-green-500/30 to-emerald-500/40", emoji: "📚", publishedAt: day(60) },
   { title: "Reel — Behind editing studio", kind: "video" as const, client: "Editorial", blurb: "Studio tour 60 detik — sparked banyak DM tentang gear setup.", metric: "640K views", gradient: "from-rose-500/40 via-red-500/30 to-orange-500/40", emoji: "🎥", publishedAt: day(70) },
   { title: "Campaign — Gojek Tokopedia merge", kind: "campaign" as const, client: "GoTo", blurb: "Narrative campaign untuk merger announcement — internal + external.", metric: "3.1M impressions", gradient: "from-emerald-600/40 via-green-500/30 to-lime-500/40", emoji: "🚀", publishedAt: day(85) },
@@ -277,6 +277,27 @@ export const syncLanding = mutation({
       }
     }
     return { inserted, reordered };
+  },
+});
+
+// Additive image backfill for already-seeded deployments: for each SHOWCASE row
+// that ships with an `image`, find the existing showcase row by its (unique)
+// title and patch `image` ONLY if the row has none yet. Never overwrites an
+// admin-set photo. Idempotent. (kreatorShowcase has no unique index → collect.)
+export const syncShowcaseImages = mutation({
+  args: {},
+  handler: async (ctx) => {
+    let patched = 0;
+    const rows = await ctx.db.query("kreatorShowcase").collect();
+    for (const s of SHOWCASE) {
+      if (!s.image) continue;
+      const existing = rows.find((r) => r.title === s.title);
+      if (existing && !existing.image) {
+        await ctx.db.patch(existing._id, { image: s.image });
+        patched++;
+      }
+    }
+    return { patched };
   },
 });
 

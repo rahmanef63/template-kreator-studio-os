@@ -139,6 +139,7 @@ export default defineSchema({
     metric: v.string(),
     gradient: v.string(),
     emoji: v.string(),
+    image: v.optional(v.string()),
     publishedAt: v.number(),
   }).index("by_publishedAt", ["publishedAt"]),
 

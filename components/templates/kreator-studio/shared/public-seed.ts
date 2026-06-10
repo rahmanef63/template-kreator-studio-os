@@ -78,6 +78,7 @@ export const SEED_SHOWCASE: ShowcaseItem[] = [
     metric: "2.4M reach",
     gradient: "from-emerald-500/40 via-teal-500/30 to-cyan-500/40",
     emoji: "🛒",
+    image: "https://picsum.photos/seed/kreator-tokopedia-seller-center/800/600",
     publishedAt: day(12),
   },
   {
@@ -89,6 +90,7 @@ export const SEED_SHOWCASE: ShowcaseItem[] = [
     metric: "186K saves",
     gradient: "from-fuchsia-500/40 via-pink-500/30 to-rose-500/40",
     emoji: "🎨",
+    image: "https://picsum.photos/seed/kreator-10-tools-creator/800/600",
     publishedAt: day(20),
   },
   {
@@ -100,6 +102,7 @@ export const SEED_SHOWCASE: ShowcaseItem[] = [
     metric: "1.2M views",
     gradient: "from-amber-500/40 via-orange-500/30 to-red-500/40",
     emoji: "🎬",
+    image: "https://picsum.photos/seed/kreator-plan-content-1-jam/800/600",
     publishedAt: day(28),
   },
   {

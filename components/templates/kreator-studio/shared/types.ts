@@ -120,6 +120,7 @@ export type ShowcaseItem = {
   metric: string; // "1.2M views"
   gradient: string; // tailwind gradient util (placeholder visual)
   emoji: string;
+  image?: string; // optional real photo; falls back to emoji + gradient
   publishedAt: number;
 };
 

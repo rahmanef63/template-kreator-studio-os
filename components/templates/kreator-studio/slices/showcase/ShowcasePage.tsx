@@ -125,16 +125,28 @@ function ShowcaseCard({ item, spotlight }: { item: ShowcaseItem; spotlight?: boo
   return (
     <Card className="group h-full overflow-hidden border-border/60 bg-card/60 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg">
       <div
-        className={`relative flex items-center justify-center bg-gradient-to-br ${item.gradient} ${
+        className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br ${item.gradient} ${
           spotlight ? "h-64 md:h-full md:min-h-[400px]" : "h-44"
         }`}
       >
         <span className={spotlight ? "text-7xl" : "text-5xl"} aria-hidden>
           {item.emoji}
         </span>
+        {item.image && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.image}
+            alt={item.title}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = "none";
+            }}
+          />
+        )}
         <Badge
           variant="secondary"
-          className="absolute left-3 top-3 rounded-full text-[10px] capitalize backdrop-blur"
+          className="absolute left-3 top-3 z-10 rounded-full text-[10px] capitalize backdrop-blur"
         >
           {item.kind}
         </Badge>
