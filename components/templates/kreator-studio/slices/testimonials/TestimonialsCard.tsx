@@ -9,7 +9,7 @@ import type { Testimonial } from "../../shared/types";
 /** Compact grid card — used in the masonry below the featured strip. */
 export function TestimonialCard({ t }: { t: Testimonial }) {
   return (
-    <Card className="border-border/60 bg-card/60">
+    <Card className="h-full border-border/60 bg-card/60 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg">
       <CardContent className="space-y-3 p-5">
         <div className="flex items-center gap-1">
           {Array.from({ length: t.rating }).map((_, i) => (
@@ -42,7 +42,7 @@ export function TestimonialCard({ t }: { t: Testimonial }) {
 /** Large gradient spotlight card — top of page, featured quotes only. */
 export function FeaturedTestimonialCard({ t }: { t: Testimonial }) {
   return (
-    <Card className={`relative overflow-hidden border-border/60 bg-gradient-to-br ${t.gradient}`}>
+    <Card className={`relative h-full overflow-hidden border-border/60 bg-gradient-to-br ${t.gradient} transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg`}>
       <CardContent className="space-y-4 p-7">
         <div className="flex items-center gap-2">
           <Sparkles className="size-4 text-amber-300" />

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Reveal } from "@/components/templates/_shared/motion";
 import { PUBLIC_BASE } from "../../shared/nav-config";
 import { useShowcase } from "../../shared/store";
 import { fmtDate } from "../../shared/store";
@@ -36,16 +37,18 @@ export function ShowcasePage() {
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-16">
-      <header>
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Showcase</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
-          Highlight karya terpilih.
-        </h1>
-        <p className="mt-4 max-w-2xl text-muted-foreground">
-          Campaign, carousel, dan video yang resonate sama audience. Mix antara work
-          klien dan editorial sendiri.
-        </p>
-      </header>
+      <Reveal>
+        <header>
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Showcase</p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
+            Highlight karya terpilih.
+          </h1>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            Campaign, carousel, dan video yang resonate sama audience. Mix antara work
+            klien dan editorial sendiri.
+          </p>
+        </header>
+      </Reveal>
 
       <ShowcaseStats items={items} />
 
@@ -64,10 +67,22 @@ export function ShowcasePage() {
         ))}
       </div>
 
+      {/* Per-item Reveal (not Stagger): spotlight col/row spans must live on
+          the wrapper div, which becomes the grid child. */}
       <div className="grid auto-rows-[minmax(220px,auto)] gap-4 md:grid-cols-3">
-        {filtered.map((item, i) => (
-          <ShowcaseCard key={item.id} item={item} spotlight={i % 5 === 0} />
-        ))}
+        {filtered.map((item, i) => {
+          const spotlight = i % 5 === 0;
+          return (
+            <Reveal
+              key={item.id}
+              variant="zoom"
+              delay={Math.min(i * 60, 360)}
+              className={spotlight ? "h-full md:col-span-2 md:row-span-2" : "h-full"}
+            >
+              <ShowcaseCard item={item} spotlight={spotlight} />
+            </Reveal>
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (
@@ -78,24 +93,26 @@ export function ShowcasePage() {
 
       <Separator className="my-16 opacity-60" />
 
-      <Card className="border-border/60 bg-gradient-to-br from-card via-card to-muted/40">
-        <CardContent className="flex flex-col items-start gap-3 p-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h3 className="text-xl font-semibold tracking-tight">Mau hasil serupa untuk brand kamu?</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Lihat opsi kerja sama atau langsung book brief call gratis.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button asChild variant="outline">
-              <Link href={`${PUBLIC_BASE}/pricing`}>Lihat pricing</Link>
-            </Button>
-            <Button asChild>
-              <Link href={`${PUBLIC_BASE}/about`}>Brief call <ArrowRight className="size-4" /></Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Reveal variant="zoom">
+        <Card className="border-border/60 bg-gradient-to-br from-card via-card to-muted/40">
+          <CardContent className="flex flex-col items-start gap-3 p-8 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-xl font-semibold tracking-tight">Mau hasil serupa untuk brand kamu?</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Lihat opsi kerja sama atau langsung book brief call gratis.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button asChild variant="outline">
+                <Link href={`${PUBLIC_BASE}/pricing`}>Lihat pricing</Link>
+              </Button>
+              <Button asChild>
+                <Link href={`${PUBLIC_BASE}/about`}>Brief call <ArrowRight className="size-4" /></Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </Reveal>
 
       <div className="mx-auto max-w-3xl">
         <CommentsSection kind="showcase" slug="gallery" title="Diskusi" />
@@ -106,11 +123,7 @@ export function ShowcasePage() {
 
 function ShowcaseCard({ item, spotlight }: { item: ShowcaseItem; spotlight?: boolean }) {
   return (
-    <Card
-      className={`group overflow-hidden border-border/60 bg-card/60 ${
-        spotlight ? "md:col-span-2 md:row-span-2" : ""
-      }`}
-    >
+    <Card className="group h-full overflow-hidden border-border/60 bg-card/60 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg">
       <div
         className={`relative flex items-center justify-center bg-gradient-to-br ${item.gradient} ${
           spotlight ? "h-64 md:h-full md:min-h-[400px]" : "h-44"

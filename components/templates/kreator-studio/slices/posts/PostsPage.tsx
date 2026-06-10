@@ -5,6 +5,7 @@ import { Mail } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionHead } from "@/components/templates/_shared/ui/section-head";
+import { Stagger } from "@/components/templates/_shared/motion";
 import { fmtDate, useNewsletters } from "../../shared/store";
 
 export function PostsPage() {
@@ -17,8 +18,9 @@ export function PostsPage() {
         subtitle="Browse semua tulisan yang sudah pernah dikirim."
       />
       <div className="grid gap-3">
+        <Stagger step={60} cap={360}>
         {issues.map((n) => (
-          <Card key={n.id} className="border-border/60 bg-card/60">
+          <Card key={n.id} className="border-border/60 bg-card/60 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg">
             <CardContent className="flex items-start gap-4 p-5">
               <Mail className="mt-1 size-4 text-muted-foreground" />
               <div className="flex-1">
@@ -37,6 +39,7 @@ export function PostsPage() {
             </CardContent>
           </Card>
         ))}
+        </Stagger>
       </div>
     </section>
   );

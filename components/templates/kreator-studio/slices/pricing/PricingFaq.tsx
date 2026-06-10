@@ -1,7 +1,13 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { SectionHead } from "@/components/templates/_shared/ui/section-head";
+import { Reveal } from "@/components/templates/_shared/motion";
 
 const FAQ_ITEMS = [
   {
@@ -38,16 +44,25 @@ export function PricingFaq() {
         title="Pertanyaan umum"
         subtitle="Hal-hal yang sering ditanyakan sebelum mulai project."
       />
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {FAQ_ITEMS.map((f) => (
-          <Card key={f.q} className="border-border/60 bg-card/60">
-            <CardContent className="space-y-2 p-5">
-              <p className="text-sm font-medium">{f.q}</p>
-              <p className="text-sm text-muted-foreground">{f.a}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Reveal className="mt-8">
+        <Accordion
+          type="single"
+          collapsible
+          defaultValue={FAQ_ITEMS[0].q}
+          className="rounded-xl border border-border/60 bg-card/50 px-4"
+        >
+          {FAQ_ITEMS.map((f) => (
+            <AccordionItem key={f.q} value={f.q}>
+              <AccordionTrigger className="text-left text-sm font-medium">
+                {f.q}
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                {f.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </Reveal>
     </div>
   );
 }

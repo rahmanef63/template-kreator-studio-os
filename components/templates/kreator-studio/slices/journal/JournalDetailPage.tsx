@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Reveal } from "@/components/templates/_shared/motion";
 import { PUBLIC_BASE } from "../../shared/nav-config";
 import { fmtDate, useJournal } from "../../shared/store";
 import type { JournalEntry } from "../../shared/types";
@@ -35,19 +36,21 @@ export function JournalDetailPage({ slug }: { slug: string }) {
         </Link>
       </Button>
 
-      <header className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="rounded-full text-[10px] capitalize">
-            {entry.category.replace("-", " ")}
-          </Badge>
-          <span className="text-[11px] text-muted-foreground">{fmtDate(entry.publishedAt)}</span>
-          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Clock className="size-3" /> {entry.readMinutes} min baca
-          </span>
-        </div>
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">{entry.title}</h1>
-        <p className="text-lg text-muted-foreground">{entry.excerpt}</p>
-      </header>
+      <Reveal>
+        <header className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="rounded-full text-[10px] capitalize">
+              {entry.category.replace("-", " ")}
+            </Badge>
+            <span className="text-[11px] text-muted-foreground">{fmtDate(entry.publishedAt)}</span>
+            <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <Clock className="size-3" /> {entry.readMinutes} min baca
+            </span>
+          </div>
+          <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">{entry.title}</h1>
+          <p className="text-lg text-muted-foreground">{entry.excerpt}</p>
+        </header>
+      </Reveal>
 
       <Separator className="my-10 opacity-60" />
 
@@ -71,7 +74,7 @@ function PrevNext({ prev, next }: { prev: JournalEntry | null; next: JournalEntr
     <div className="grid gap-3 md:grid-cols-2">
       {prev ? (
         <Link href={`${PUBLIC_BASE}/journal/${prev.slug}`} className="group">
-          <Card className="h-full border-border/60 bg-card/60 transition group-hover:border-foreground/30">
+          <Card className="h-full border-border/60 bg-card/60 transition duration-300 group-hover:-translate-y-1 group-hover:border-foreground/30 group-hover:shadow-lg">
             <CardContent className="space-y-1 p-4">
               <p className="flex items-center gap-1 text-[11px] uppercase tracking-wider text-muted-foreground">
                 <ArrowLeft className="size-3" /> Sebelumnya
@@ -85,7 +88,7 @@ function PrevNext({ prev, next }: { prev: JournalEntry | null; next: JournalEntr
       )}
       {next ? (
         <Link href={`${PUBLIC_BASE}/journal/${next.slug}`} className="group">
-          <Card className="h-full border-border/60 bg-card/60 transition group-hover:border-foreground/30">
+          <Card className="h-full border-border/60 bg-card/60 transition duration-300 group-hover:-translate-y-1 group-hover:border-foreground/30 group-hover:shadow-lg">
             <CardContent className="space-y-1 p-4 md:text-right">
               <p className="flex items-center justify-end gap-1 text-[11px] uppercase tracking-wider text-muted-foreground">
                 Berikutnya <ArrowRight className="size-3" />

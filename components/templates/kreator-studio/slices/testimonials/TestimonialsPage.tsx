@@ -2,10 +2,24 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Autoplay from "embla-carousel-autoplay";
 import { ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Separator } from "@/components/ui/separator";
+import {
+  CountUp,
+  Marquee,
+  Reveal,
+  Stagger,
+} from "@/components/templates/_shared/motion";
 import { PUBLIC_BASE } from "../../shared/nav-config";
 import { useFeaturedClients, useTestimonials } from "../../shared/store";
 import type { Testimonial } from "../../shared/types";
@@ -48,40 +62,43 @@ export function TestimonialsPage() {
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-16">
-      <header className="max-w-3xl">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-          Testimonials
-        </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
-          Apa kata klien & audience.
-        </h1>
-        <p className="mt-4 text-muted-foreground">
-          Wall-of-love dari brand yang pernah kerja sama dan reader yang konsisten
-          baca tiap minggu. Real words, real outcomes.
-        </p>
-        <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
-          <div className="flex items-center gap-1.5">
-            <Star className="size-4 fill-amber-400 text-amber-400" />
-            <span className="font-medium">{avgRating.toFixed(1)}</span>
-            <span className="text-muted-foreground">avg rating</span>
+      <Reveal>
+        <header className="max-w-3xl">
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+            Testimonials
+          </p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
+            Apa kata klien & audience.
+          </h1>
+          <p className="mt-4 text-muted-foreground">
+            Wall-of-love dari brand yang pernah kerja sama dan reader yang konsisten
+            baca tiap minggu. Real words, real outcomes.
+          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex items-center gap-1.5">
+              <Star className="size-4 fill-amber-400 text-amber-400" />
+              <span className="font-medium">{avgRating.toFixed(1)}</span>
+              <span className="text-muted-foreground">avg rating</span>
+            </div>
+            <Separator orientation="vertical" className="h-4" />
+            <span className="text-muted-foreground">
+              <CountUp value={testimonials.length} /> testimoni ·{" "}
+              <CountUp value={clients.length} /> brand
+            </span>
           </div>
-          <Separator orientation="vertical" className="h-4" />
-          <span className="text-muted-foreground">
-            {testimonials.length} testimoni · {clients.length} brand
-          </span>
-        </div>
-      </header>
+        </header>
+      </Reveal>
 
-      {/* Featured client logos strip */}
-      <div className="mt-12">
+      {/* Featured client logos strip — infinite marquee, pauses on hover */}
+      <Reveal className="mt-12" delay={120}>
         <p className="mb-4 text-[11px] uppercase tracking-wider text-muted-foreground">
           Trusted by
         </p>
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-7">
+        <Marquee speed={30}>
           {clients.map((c) => (
             <div
               key={c.id}
-              className={`flex h-16 items-center justify-center rounded-lg border border-border/60 bg-gradient-to-br ${c.gradient} backdrop-blur transition hover:scale-[1.02]`}
+              className={`flex h-16 w-32 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-gradient-to-br ${c.gradient} backdrop-blur transition hover:scale-[1.02]`}
             >
               <div className="text-center">
                 <div className="text-2xl font-bold tracking-tight text-foreground/85">
@@ -93,15 +110,17 @@ export function TestimonialsPage() {
               </div>
             </div>
           ))}
-        </div>
-      </div>
+        </Marquee>
+      </Reveal>
 
       {/* Featured spotlight quotes */}
       {featured.length > 0 && (
         <div className="mt-12 grid gap-4 md:grid-cols-2">
-          {featured.map((t) => (
-            <FeaturedTestimonialCard key={t.id} t={t} />
-          ))}
+          <Stagger variant="zoom" itemClassName="h-full">
+            {featured.map((t) => (
+              <FeaturedTestimonialCard key={t.id} t={t} />
+            ))}
+          </Stagger>
         </div>
       )}
 
@@ -120,16 +139,34 @@ export function TestimonialsPage() {
         ))}
       </div>
 
-      {/* Masonry grid of remaining quotes */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((t) => (
-          <TestimonialCard key={t.id} t={t} />
-        ))}
-      </div>
+      {/* Quote carousel — autoplays, pauses once the reader interacts */}
+      {filtered.length === 0 ? (
+        <Card className="border-dashed bg-muted/10 p-10 text-center text-sm text-muted-foreground">
+          Belum ada testimoni di filter ini.
+        </Card>
+      ) : (
+        <Carousel
+          opts={{ align: "start", loop: filtered.length > 3 }}
+          plugins={[Autoplay({ delay: 4500, stopOnInteraction: true })]}
+        >
+          <div className="mb-4 flex items-center justify-end gap-2">
+            <CarouselPrevious />
+            <CarouselNext />
+          </div>
+          <CarouselContent>
+            {filtered.map((t) => (
+              <CarouselItem key={t.id} className="basis-full sm:basis-1/2 lg:basis-1/3">
+                <TestimonialCard t={t} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      )}
 
       <Separator className="my-16 opacity-60" />
 
       {/* CTA */}
+      <Reveal variant="zoom">
       <Card className="border-border/60 bg-gradient-to-br from-card via-card to-muted/40">
         <CardContent className="flex flex-col items-start gap-3 p-8 md:flex-row md:items-center md:justify-between">
           <div>
@@ -152,6 +189,7 @@ export function TestimonialsPage() {
           </div>
         </CardContent>
       </Card>
+      </Reveal>
     </section>
   );
 }

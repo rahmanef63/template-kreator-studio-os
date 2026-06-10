@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Reveal, Stagger } from "@/components/templates/_shared/motion";
 import { PUBLIC_BASE } from "../../shared/nav-config";
 import { fmtDate, useJournal } from "../../shared/store";
 import type { JournalEntry } from "../../shared/types";
@@ -34,16 +35,18 @@ export function JournalListPage() {
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-16">
-      <header>
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Journal</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
-          Catatan, lesson, dan behind-the-scenes.
-        </h1>
-        <p className="mt-4 max-w-2xl text-muted-foreground">
-          Lebih panjang dari newsletter, lebih honest dari LinkedIn. Tempat untuk
-          long-form thinking yang masih in-progress.
-        </p>
-      </header>
+      <Reveal>
+        <header>
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Journal</p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
+            Catatan, lesson, dan behind-the-scenes.
+          </h1>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            Lebih panjang dari newsletter, lebih honest dari LinkedIn. Tempat untuk
+            long-form thinking yang masih in-progress.
+          </p>
+        </header>
+      </Reveal>
 
       <div className="mt-10 mb-8 flex flex-wrap items-center gap-2">
         <Filter className="size-3.5 text-muted-foreground" />
@@ -60,15 +63,21 @@ export function JournalListPage() {
         ))}
       </div>
 
-      {featured && <FeaturedCard entry={featured} />}
+      {featured && (
+        <Reveal variant="zoom">
+          <FeaturedCard entry={featured} />
+        </Reveal>
+      )}
 
       {rest.length > 0 && (
         <>
           <Separator className="my-12 opacity-60" />
           <div className="grid gap-5 md:grid-cols-2">
-            {rest.map((e) => (
-              <JournalCard key={e.id} entry={e} />
-            ))}
+            <Stagger itemClassName="h-full">
+              {rest.map((e) => (
+                <JournalCard key={e.id} entry={e} />
+              ))}
+            </Stagger>
           </div>
         </>
       )}
@@ -114,8 +123,8 @@ function FeaturedCard({ entry }: { entry: JournalEntry }) {
 
 function JournalCard({ entry }: { entry: JournalEntry }) {
   return (
-    <Link href={`${PUBLIC_BASE}/journal/${entry.slug}`} className="group block">
-      <Card className="h-full border-border/60 bg-card/60 transition group-hover:border-foreground/30">
+    <Link href={`${PUBLIC_BASE}/journal/${entry.slug}`} className="group block h-full">
+      <Card className="h-full border-border/60 bg-card/60 transition duration-300 group-hover:-translate-y-1 group-hover:border-foreground/30 group-hover:shadow-lg">
         <CardContent className="space-y-2 p-6">
           <div className="flex items-center justify-between gap-2">
             <Badge variant="outline" className="rounded-full text-[10px] capitalize">

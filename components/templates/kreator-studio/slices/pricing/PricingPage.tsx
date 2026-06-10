@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Reveal, Stagger } from "@/components/templates/_shared/motion";
 import { PUBLIC_BASE } from "../../shared/nav-config";
 import { usePackages } from "../../shared/store";
 import type { PricingPackage } from "../../shared/types";
@@ -23,21 +24,25 @@ export function PricingPage() {
   const packages = usePackages();
   return (
     <section className="mx-auto max-w-6xl px-6 py-16">
-      <header className="text-center">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Pricing</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
-          Kerja sama — pilih sesuai konteks tim kamu.
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-          Empat paket utama, semua transparan. Untuk custom scope, langsung email — biasanya
-          balas H+1 kerja dengan estimasi awal.
-        </p>
-      </header>
+      <Reveal>
+        <header className="text-center">
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Pricing</p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
+            Kerja sama — pilih sesuai konteks tim kamu.
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+            Empat paket utama, semua transparan. Untuk custom scope, langsung email — biasanya
+            balas H+1 kerja dengan estimasi awal.
+          </p>
+        </header>
+      </Reveal>
 
       <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {packages.map((p) => (
-          <PackageCard key={p.id} pkg={p} />
-        ))}
+        <Stagger itemClassName="h-full">
+          {packages.map((p) => (
+            <PackageCard key={p.id} pkg={p} />
+          ))}
+        </Stagger>
       </div>
 
       <Separator className="my-16 opacity-60" />
@@ -52,11 +57,11 @@ export function PricingPage() {
 function PackageCard({ pkg }: { pkg: PricingPackage }) {
   return (
     <Card
-      className={
+      className={`h-full transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg ${
         pkg.featured
           ? "relative border-foreground/30 bg-card shadow-sm"
           : "border-border/60 bg-card/60"
-      }
+      }`}
     >
       {pkg.badge && (
         <Badge className="absolute -top-2 left-5 rounded-full px-2.5 py-0.5 text-[10px]" variant="default">
@@ -96,18 +101,20 @@ function PackageCard({ pkg }: { pkg: PricingPackage }) {
 
 function BottomCta() {
   return (
-    <Card className="mt-20 border-border/60 bg-gradient-to-br from-card via-card to-muted/40">
-      <CardContent className="flex flex-col items-start gap-3 p-8 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 className="text-xl font-semibold tracking-tight">Belum yakin yang mana?</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Brief 15 menit free — saya bantu rekomendasi paket yang fit konteks kamu.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href={`${PUBLIC_BASE}/about`}>Book brief call <ArrowRight className="size-4" /></Link>
-        </Button>
-      </CardContent>
-    </Card>
+    <Reveal variant="zoom" className="mt-20">
+      <Card className="border-border/60 bg-gradient-to-br from-card via-card to-muted/40">
+        <CardContent className="flex flex-col items-start gap-3 p-8 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-xl font-semibold tracking-tight">Belum yakin yang mana?</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Brief 15 menit free — saya bantu rekomendasi paket yang fit konteks kamu.
+            </p>
+          </div>
+          <Button asChild>
+            <Link href={`${PUBLIC_BASE}/about`}>Book brief call <ArrowRight className="size-4" /></Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </Reveal>
   );
 }

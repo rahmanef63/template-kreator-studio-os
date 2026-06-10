@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionHead } from "@/components/templates/_shared/ui/section-head";
+import { Reveal } from "@/components/templates/_shared/motion";
 
 const COMPARE_ROWS = [
   { label: "Brief call", values: ["—", "Async", "45 min", "2 jam workshop"] },
@@ -14,7 +15,8 @@ export function PricingCompare() {
   return (
     <div className="mt-20">
       <SectionHead eyebrow="Compare" title="Apa yang masuk per paket" />
-      <Card className="mt-6 overflow-x-auto border-border/60">
+      <Reveal className="mt-6">
+      <Card className="overflow-x-auto border-border/60">
         <CardContent className="p-0">
           <table className="w-full text-sm">
             <thead className="bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
@@ -39,6 +41,7 @@ export function PricingCompare() {
           </table>
         </CardContent>
       </Card>
+      </Reveal>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   type FeatureItem,
 } from "@/components/templates/_shared";
 import { LandingSectionShell } from "@/components/templates/_shared/landing/LandingSectionShell";
+import { Stagger } from "@/components/templates/_shared/motion";
 import { parseConfigBadge } from "@/components/templates/_shared/landing/parse-config";
 import type { LandingSection } from "@/components/templates/_shared/landing/types";
 import { ADMIN_BASE, PUBLIC_BASE } from "../../shared/nav-config";
@@ -94,20 +95,22 @@ export function renderLanding(section: LandingSection, deps: Deps) {
               cta={{ label: "Semua issue", href: `${PUBLIC_BASE}/posts` }}
             />
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((n) => (
-                <Card key={n.id} className="border-border/60 bg-card/60">
-                  <CardContent className="space-y-2 p-5">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                      Terkirim
-                    </p>
-                    <h3 className="text-base font-medium leading-snug">{n.subject}</h3>
-                    <p className="text-sm text-muted-foreground">{n.preview}</p>
-                    <p className="pt-2 text-[11px] text-muted-foreground">
-                      {n.recipients.toLocaleString()} recipients · {n.openRate.toFixed(1)}% open rate
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+              <Stagger itemClassName="h-full">
+                {items.map((n) => (
+                  <Card key={n.id} className="h-full border-border/60 bg-card/60 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg">
+                    <CardContent className="space-y-2 p-5">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Terkirim
+                      </p>
+                      <h3 className="text-base font-medium leading-snug">{n.subject}</h3>
+                      <p className="text-sm text-muted-foreground">{n.preview}</p>
+                      <p className="pt-2 text-[11px] text-muted-foreground">
+                        {n.recipients.toLocaleString()} recipients · {n.openRate.toFixed(1)}% open rate
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Stagger>
             </div>
           </div>
         </LandingSectionShell>
@@ -124,20 +127,22 @@ export function renderLanding(section: LandingSection, deps: Deps) {
             subtitle={section.subtitle}
           />
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((c) => (
-              <Card key={c.id} className="border-border/60 bg-card/60">
-                <CardContent className="space-y-2 p-5">
-                  <Badge variant="outline" className="rounded-full text-[10px] capitalize">
-                    {c.channel}
-                  </Badge>
-                  <h3 className="text-sm font-medium leading-snug">{c.title}</h3>
-                  <p className="text-xs text-muted-foreground">{c.hook}</p>
-                  <p className="pt-2 text-[11px] text-muted-foreground">
-                    {c.views.toLocaleString()} views · {c.likes.toLocaleString()} likes
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+            <Stagger itemClassName="h-full">
+              {items.map((c) => (
+                <Card key={c.id} className="h-full border-border/60 bg-card/60 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg">
+                  <CardContent className="space-y-2 p-5">
+                    <Badge variant="outline" className="rounded-full text-[10px] capitalize">
+                      {c.channel}
+                    </Badge>
+                    <h3 className="text-sm font-medium leading-snug">{c.title}</h3>
+                    <p className="text-xs text-muted-foreground">{c.hook}</p>
+                    <p className="pt-2 text-[11px] text-muted-foreground">
+                      {c.views.toLocaleString()} views · {c.likes.toLocaleString()} likes
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stagger>
           </div>
         </LandingSectionShell>
       );

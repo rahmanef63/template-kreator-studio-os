@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { CountUp, Stagger } from "@/components/templates/_shared/motion";
 import type { ShowcaseItem } from "../../shared/types";
 
 /**
@@ -18,23 +19,27 @@ export function ShowcaseStats({ items }: { items: ShowcaseItem[] }) {
   const carousels = items.filter((i) => i.kind === "carousel").length;
   const campaigns = items.filter((i) => i.kind === "campaign").length;
 
-  const stats = [
-    { label: "Total karya", value: String(total) },
-    { label: "Total reach", value: fmtBig(totalReach) },
-    { label: "Carousel", value: String(carousels) },
-    { label: "Campaign", value: String(campaigns) },
+  const stats: { label: string; value: number; format?: (n: number) => string }[] = [
+    { label: "Total karya", value: total },
+    { label: "Total reach", value: totalReach, format: fmtBig },
+    { label: "Carousel", value: carousels },
+    { label: "Campaign", value: campaigns },
   ];
 
   return (
     <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
-      {stats.map((s) => (
-        <Card key={s.label} className="border-border/60 bg-card/60">
-          <CardContent className="space-y-1 p-4">
-            <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</p>
-            <p className="text-2xl font-semibold tracking-tight">{s.value}</p>
-          </CardContent>
-        </Card>
-      ))}
+      <Stagger itemClassName="h-full">
+        {stats.map((s) => (
+          <Card key={s.label} className="h-full border-border/60 bg-card/60">
+            <CardContent className="space-y-1 p-4">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</p>
+              <p className="text-2xl font-semibold tracking-tight">
+                <CountUp value={s.value} format={s.format} />
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </Stagger>
     </div>
   );
 }
