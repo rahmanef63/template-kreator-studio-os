@@ -139,12 +139,22 @@ const PAYOUTS = [
   { source: "GoTo — Brand narrative", kind: "sponsor" as const, amountIdr: 24_000_000, status: "in-review" as const, dueAt: future(21) },
 ];
 
+// Keep in sync with components/templates/kreator-studio/shared/landing-seed.ts
+// SEED_LANDING_SECTIONS. `syncLanding` below pushes additions/order to an
+// already-seeded deployment without touching admin-edited copy.
 const LANDING = [
   { id: "ls-hero", order: 10, kind: "hero", title: "Newsletter & content notes untuk creator yang serius.", subtitle: "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.", enabled: true, config: '{"badge":"Issue mingguan untuk creator"}' },
-  { id: "ls-newsletter", order: 20, kind: "newsletter", title: "Subscribe newsletter", subtitle: "12K subscribers · 38% avg open rate · gratis selamanya.", enabled: true },
-  { id: "ls-features", order: 30, kind: "features", title: "Apa yang ada di balik newsletter ini", subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.", enabled: true },
-  { id: "ls-blog", order: 40, kind: "blog", title: "Issue terbaru", subtitle: "Klik untuk baca arsip lengkap.", enabled: true },
-  { id: "ls-portfolio", order: 50, kind: "portfolio", title: "Highlight social posts", subtitle: "Yang paling resonance bulan ini di IG, TikTok, dan YouTube.", enabled: true },
+  { id: "ls-stats", order: 15, kind: "stats", title: "Angka yang jalan tiap minggu", subtitle: "Subscribers, views, dan brand yang sudah collab — live dari workspace ini.", enabled: true },
+  { id: "ls-features", order: 20, kind: "features", title: "Apa yang ada di balik newsletter ini", subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.", enabled: true },
+  { id: "ls-portfolio", order: 30, kind: "portfolio", title: "Highlight social posts", subtitle: "Yang paling resonance bulan ini di IG, TikTok, dan YouTube.", enabled: true },
+  { id: "ls-showcase", order: 35, kind: "services", title: "Karya & campaign terpilih", subtitle: "Carousel, video, dan campaign yang perform paling kuat.", enabled: true, config: '{"limit":3}' },
+  { id: "ls-testimonials", order: 40, kind: "testimonials", title: "Kata mereka yang sudah kerja bareng", subtitle: "Brand, klien, dan reader newsletter — real words, real outcomes.", enabled: true, config: '{"limit":6}' },
+  { id: "ls-pricing", order: 45, kind: "pricing", title: "Paket kerja sama", subtitle: "Newsletter sponsor, carousel pack, sampai custom production — semua transparan.", enabled: true },
+  { id: "ls-faq", order: 50, kind: "faq", title: "Sering ditanya brand & creator", subtitle: "Soal kolaborasi, rate card, lisensi konten, dan timeline produksi.", enabled: true },
+  { id: "ls-blog", order: 55, kind: "blog", title: "Issue terbaru", subtitle: "Klik untuk baca arsip lengkap.", enabled: true, config: '{"limit":3}' },
+  { id: "ls-journal", order: 60, kind: "changelog", title: "Journal — di balik layar", subtitle: "Lesson, eksperimen, dan essay panjang di luar feed newsletter.", enabled: true, config: '{"limit":3}' },
+  { id: "ls-cta", order: 65, kind: "cta", title: "Mau bikin campaign yang resonance?", subtitle: "Brief call 15 menit, gratis — saya bantu rekomendasi format yang fit.", enabled: true },
+  { id: "ls-newsletter", order: 70, kind: "newsletter", title: "Subscribe newsletter", subtitle: "12K subscribers · 38% avg open rate · gratis selamanya.", enabled: true },
 ];
 
 const PAGES = [
@@ -240,6 +250,33 @@ export const run = mutation({
       for (const row of await ctx.db.query(t).take(1000)) await ctx.db.delete(row._id);
     }
     return insertAll(ctx);
+  },
+});
+
+// Additive landing sync for already-seeded deployments: inserts LANDING
+// entries whose sectionId is missing and aligns `order` to the canonical
+// lineup. Never touches admin-edited copy/enabled/config on existing rows.
+export const syncLanding = mutation({
+  args: {},
+  handler: async (ctx) => {
+    let inserted = 0;
+    let reordered = 0;
+    for (const s of LANDING) {
+      const existing = await ctx.db
+        .query("landingSections")
+        .withIndex("by_sectionId", (q) => q.eq("sectionId", s.id))
+        .unique();
+      if (!existing) {
+        await ctx.db.insert("landingSections", { sectionId: s.id, data: s });
+        inserted++;
+      } else if ((existing.data as { order?: number }).order !== s.order) {
+        await ctx.db.patch(existing._id, {
+          data: { ...(existing.data as Record<string, unknown>), order: s.order },
+        });
+        reordered++;
+      }
+    }
+    return { inserted, reordered };
   },
 });
 

@@ -1,4 +1,4 @@
-import type { LandingSection } from "@/components/templates/_shared/landing/types";
+import { SEED_LANDING_SECTIONS } from "./landing-seed";
 import { SEED_PAGES } from "./pages-seed";
 import { SEED_JOURNAL, SEED_PACKAGES, SEED_SHOWCASE } from "./public-seed";
 import { SEED_FEATURED_CLIENTS, SEED_TESTIMONIALS } from "./testimonials-seed";
@@ -8,50 +8,9 @@ import {
   SEED_PAYOUTS,
 } from "./monetization-seed";
 
-export const SEED_LANDING_SECTIONS: LandingSection[] = [
-  {
-    id: "ls-hero",
-    order: 10,
-    kind: "hero",
-    title: "Newsletter & content notes untuk creator yang serius.",
-    subtitle:
-      "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.",
-    enabled: true,
-    config: '{"badge":"Issue mingguan untuk creator"}',
-  },
-  {
-    id: "ls-newsletter",
-    order: 20,
-    kind: "newsletter",
-    title: "Subscribe newsletter",
-    subtitle: "12K subscribers · 38% avg open rate · gratis selamanya.",
-    enabled: true,
-  },
-  {
-    id: "ls-features",
-    order: 30,
-    kind: "features",
-    title: "Apa yang ada di balik newsletter ini",
-    subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.",
-    enabled: true,
-  },
-  {
-    id: "ls-blog",
-    order: 40,
-    kind: "blog",
-    title: "Issue terbaru",
-    subtitle: "Klik untuk baca arsip lengkap.",
-    enabled: true,
-  },
-  {
-    id: "ls-portfolio",
-    order: 50,
-    kind: "portfolio",
-    title: "Highlight social posts",
-    subtitle: "Yang paling resonance bulan ini di IG, TikTok, dan YouTube.",
-    enabled: true,
-  },
-];
+// Landing sections live in landing-seed.ts (12-section rhythm) — re-exported
+// here so existing imports keep working.
+export { SEED_LANDING_SECTIONS } from "./landing-seed";
 import type {
   Asset,
   Carousel,
