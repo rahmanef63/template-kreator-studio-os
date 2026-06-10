@@ -15,6 +15,7 @@ import {
   Newspaper,
   NotebookPen,
   Settings,
+  ShoppingCart,
   Wand2,
 } from "lucide-react";
 import type { AdminNavGroup, AdminNavItem, FooterColumn, NavItem, User } from "@/components/templates/_shared/types/common";
@@ -98,6 +99,7 @@ export function buildAdminPrimaryNav(state: State): AdminNavItem[] {
     { id: "performance",label: "Performance", href: `${ADMIN_BASE}/performance`,   icon: LineChart,       count: null },
     { id: "analytics",  label: "Analytics",   href: `${ADMIN_BASE}/analytics`,     icon: BarChart3,       count: null },
     { id: "monetization",label: "Monetization",href: `${ADMIN_BASE}/monetization`, icon: DollarSign,      count: null },
+    { id: "orders",     label: "Orders",      href: `${ADMIN_BASE}/orders`,        icon: ShoppingCart,    count: null },
     { id: "newsletter", label: "Newsletter",  href: `${ADMIN_BASE}/newsletter`,    icon: Mail,            count: newsletterDrafts || null },
     { id: "comments",   label: "Comments",    href: `${ADMIN_BASE}/comments`,      icon: MessageSquare,   count: pendingComments || null },
     { id: "notes",      label: "Notes",       href: `${ADMIN_BASE}/notes`,         icon: NotebookPen,     count: null },

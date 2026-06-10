@@ -41,6 +41,7 @@ import type * as journal from "../journal.js";
 import type * as landing from "../landing.js";
 import type * as monetization from "../monetization.js";
 import type * as newsletters from "../newsletters.js";
+import type * as orders from "../orders.js";
 import type * as packages from "../packages.js";
 import type * as pages from "../pages.js";
 import type * as performance from "../performance.js";
@@ -95,6 +96,7 @@ declare const fullApi: ApiFromModules<{
   landing: typeof landing;
   monetization: typeof monetization;
   newsletters: typeof newsletters;
+  orders: typeof orders;
   packages: typeof packages;
   pages: typeof pages;
   performance: typeof performance;
