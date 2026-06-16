@@ -33,6 +33,16 @@ export function useConvexDispatch(state: State): (a: Action) => void {
   const mPageRemove = useMutation(api.pages.remove);
   const mLandingUpsert = useMutation(api.landing.upsert);
   const mLandingRemove = useMutation(api.landing.remove);
+  const mPackageUpsert = useMutation(api.packages.upsert);
+  const mPackageRemove = useMutation(api.packages.remove);
+  const mShowcaseUpsert = useMutation(api.showcase.upsert);
+  const mShowcaseRemove = useMutation(api.showcase.remove);
+  const mJournalUpsert = useMutation(api.journal.upsert);
+  const mJournalRemove = useMutation(api.journal.remove);
+  const mTestimonialUpsert = useMutation(api.testimonials.upsert);
+  const mTestimonialRemove = useMutation(api.testimonials.remove);
+  const mFeaturedClientUpsert = useMutation(api.featuredClients.upsert);
+  const mFeaturedClientRemove = useMutation(api.featuredClients.remove);
 
   const knownIds = React.useMemo(
     () => ({
@@ -44,6 +54,11 @@ export function useConvexDispatch(state: State): (a: Action) => void {
       newsletters: new Set(state.newsletters.map((n) => n.id)),
       performance: new Set(state.performance.map((p) => p.id)),
       commentDrafts: new Set(state.commentDrafts.map((c) => c.id)),
+      packages: new Set(state.packages.map((p) => p.id)),
+      showcase: new Set(state.showcase.map((s) => s.id)),
+      journal: new Set(state.journal.map((j) => j.id)),
+      testimonials: new Set(state.testimonials.map((t) => t.id)),
+      featuredClients: new Set(state.featuredClients.map((f) => f.id)),
     }),
     [state],
   );
@@ -164,6 +179,66 @@ export function useConvexDispatch(state: State): (a: Action) => void {
           if (entry) void mPageUpsert({ entryId: entry.id, slug: entry.slug, data: entry }).catch(fail);
           break;
         }
+
+        case "package.upsert": {
+          const { id, ...d } = action.pkg;
+          void (knownIds.packages.has(id)
+            ? mPackageUpsert({ id: id as Id<"kreatorPackages">, ...d })
+            : mPackageUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "package.delete":
+          void mPackageRemove({ id: action.id as Id<"kreatorPackages"> }).catch(fail);
+          break;
+
+        case "showcase.upsert": {
+          const { id, ...d } = action.item;
+          void (knownIds.showcase.has(id)
+            ? mShowcaseUpsert({ id: id as Id<"kreatorShowcase">, ...d })
+            : mShowcaseUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "showcase.delete":
+          void mShowcaseRemove({ id: action.id as Id<"kreatorShowcase"> }).catch(fail);
+          break;
+
+        case "journal.upsert": {
+          const { id, ...d } = action.entry;
+          void (knownIds.journal.has(id)
+            ? mJournalUpsert({ id: id as Id<"kreatorJournal">, ...d })
+            : mJournalUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "journal.delete":
+          void mJournalRemove({ id: action.id as Id<"kreatorJournal"> }).catch(fail);
+          break;
+
+        case "testimonial.upsert": {
+          const { id, ...d } = action.testimonial;
+          void (knownIds.testimonials.has(id)
+            ? mTestimonialUpsert({ id: id as Id<"kreatorTestimonials">, ...d })
+            : mTestimonialUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "testimonial.delete":
+          void mTestimonialRemove({ id: action.id as Id<"kreatorTestimonials"> }).catch(fail);
+          break;
+
+        case "featuredClient.upsert": {
+          const { id, ...d } = action.client;
+          void (knownIds.featuredClients.has(id)
+            ? mFeaturedClientUpsert({ id: id as Id<"kreatorFeaturedClients">, ...d })
+            : mFeaturedClientUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "featuredClient.delete":
+          void mFeaturedClientRemove({ id: action.id as Id<"kreatorFeaturedClients"> }).catch(fail);
+          break;
 
         case "LANDING_UPSERT": {
           const s = action.payload as LandingSection;

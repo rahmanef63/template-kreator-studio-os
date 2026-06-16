@@ -1,7 +1,11 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import * as React from "react";
+import { useMutation, useQuery } from "convex/react";
+import { toast } from "sonner";
+import { Save } from "lucide-react";
 import { api } from "@/convex/_generated/api";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +18,31 @@ import { DEFAULT_SITE_CONFIG } from "../../../shared/site-config";
 export function SettingsView() {
   const c = DEFAULT_SITE_CONFIG;
   const settings = useQuery(api.settings.get);
+  const upsert = useMutation(api.settings.upsert);
+  const [siteName, setSiteName] = React.useState("");
+  const [ownerName, setOwnerName] = React.useState("");
+  const [contactEmail, setContactEmail] = React.useState("");
+  const [saving, setSaving] = React.useState(false);
+
+  React.useEffect(() => {
+    if (settings === undefined) return;
+    setSiteName(settings?.siteName ?? c.brandName);
+    setOwnerName(settings?.ownerName ?? c.ownerName);
+    setContactEmail(settings?.contactEmail ?? c.email);
+  }, [settings, c.brandName, c.ownerName, c.email]);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await upsert({ siteName, ownerName, contactEmail });
+      toast.success("Settings tersimpan");
+    } catch {
+      toast.error("Gagal menyimpan settings");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-5">
       <SectionHead eyebrow="Pengaturan" title="Settings" subtitle="Konfigurasi creator workspace. Identitas situs disimpan di Convex (diisi lewat wizard onboarding)." />
@@ -24,20 +53,25 @@ export function SettingsView() {
           <div className="grid gap-3 md:grid-cols-2">
             <div>
               <Label className="text-xs">Brand name</Label>
-              <Input defaultValue={settings?.siteName || c.brandName} className="mt-1" />
+              <Input value={siteName} onChange={(e) => setSiteName(e.target.value)} className="mt-1" />
             </div>
             <div>
               <Label className="text-xs">Owner</Label>
-              <Input defaultValue={settings?.ownerName || c.ownerName} className="mt-1" />
+              <Input value={ownerName} onChange={(e) => setOwnerName(e.target.value)} className="mt-1" />
             </div>
             <div>
               <Label className="text-xs">Email</Label>
-              <Input defaultValue={settings?.contactEmail || c.email} className="mt-1" />
+              <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className="mt-1" />
             </div>
             <div>
               <Label className="text-xs">Domain</Label>
-              <Input defaultValue={c.baseUrl} className="mt-1" />
+              <Input defaultValue={c.baseUrl} readOnly className="mt-1" />
             </div>
+          </div>
+          <div className="flex justify-end">
+            <Button size="sm" className="gap-1" onClick={save} disabled={saving}>
+              <Save className="size-4" /> {saving ? "Menyimpan…" : "Simpan"}
+            </Button>
           </div>
         </CardContent>
       </Card>

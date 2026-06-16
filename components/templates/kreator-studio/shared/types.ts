@@ -186,5 +186,15 @@ export type Action =
   | { type: "performance.delete"; id: string }
   | { type: "comment.upsert"; draft: CommentDraft }
   | { type: "comment.delete"; id: string }
+  | { type: "package.upsert"; pkg: PricingPackage }
+  | { type: "package.delete"; id: string }
+  | { type: "showcase.upsert"; item: ShowcaseItem }
+  | { type: "showcase.delete"; id: string }
+  | { type: "journal.upsert"; entry: JournalEntry }
+  | { type: "journal.delete"; id: string }
+  | { type: "testimonial.upsert"; testimonial: Testimonial }
+  | { type: "testimonial.delete"; id: string }
+  | { type: "featuredClient.upsert"; client: FeaturedClient }
+  | { type: "featuredClient.delete"; id: string }
   | { type: "hydrate"; state: State }
   | { type: "reset" };

@@ -16,6 +16,10 @@ import {
   NotebookPen,
   Settings,
   ShoppingCart,
+  Sparkles,
+  Star,
+  Tag,
+  Users,
   Wand2,
 } from "lucide-react";
 import type { AdminNavGroup, AdminNavItem, FooterColumn, NavItem, User } from "@/components/templates/_shared/types/common";
@@ -97,6 +101,11 @@ export function buildAdminPrimaryNav(state: State): AdminNavItem[] {
     { id: "carousels",  label: "Carousels",   href: `${ADMIN_BASE}/carousels`,     icon: FileImage,       count: state.carousels.length },
     { id: "assets",     label: "Assets",      href: `${ADMIN_BASE}/assets`,        icon: ImageIcon,       count: state.assets.length },
     { id: "performance",label: "Performance", href: `${ADMIN_BASE}/performance`,   icon: LineChart,       count: null },
+    { id: "showcase",   label: "Showcase",    href: `${ADMIN_BASE}/showcase`,      icon: Sparkles,        count: state.showcase.length || null },
+    { id: "journal",    label: "Journal",     href: `${ADMIN_BASE}/journal`,       icon: Newspaper,       count: state.journal.length || null },
+    { id: "packages",   label: "Packages",    href: `${ADMIN_BASE}/packages`,      icon: Tag,             count: state.packages.length || null },
+    { id: "testimonials",label: "Testimonials",href: `${ADMIN_BASE}/testimonials`, icon: Star,            count: state.testimonials.length || null },
+    { id: "clients",    label: "Clients",     href: `${ADMIN_BASE}/clients`,       icon: Users,           count: state.featuredClients.length || null },
     { id: "analytics",  label: "Analytics",   href: `${ADMIN_BASE}/analytics`,     icon: BarChart3,       count: null },
     { id: "monetization",label: "Monetization",href: `${ADMIN_BASE}/monetization`, icon: DollarSign,      count: null },
     { id: "orders",     label: "Orders",      href: `${ADMIN_BASE}/orders`,        icon: ShoppingCart,    count: null },
