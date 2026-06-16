@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireUser } from "./_shared/auth";
 
 const KIND = v.union(
   v.literal("sponsor"),
@@ -25,6 +26,7 @@ export const upsertSource = mutation({
     growth: v.number(),
   },
   handler: async (ctx, { id, ...data }) => {
+    await requireUser(ctx);
     if (id) {
       await ctx.db.patch(id, data);
       return id;
@@ -36,6 +38,7 @@ export const upsertSource = mutation({
 export const removeSource = mutation({
   args: { id: v.id("kreatorMonetizationSources") },
   handler: async (ctx, { id }) => {
+    await requireUser(ctx);
     await ctx.db.delete(id);
   },
 });
@@ -53,6 +56,7 @@ export const upsertMonth = mutation({
     amountIdr: v.number(),
   },
   handler: async (ctx, { id, ...data }) => {
+    await requireUser(ctx);
     if (id) {
       await ctx.db.patch(id, data);
       return id;
@@ -64,6 +68,7 @@ export const upsertMonth = mutation({
 export const removeMonth = mutation({
   args: { id: v.id("kreatorMonetizationMonths") },
   handler: async (ctx, { id }) => {
+    await requireUser(ctx);
     await ctx.db.delete(id);
   },
 });
@@ -84,6 +89,7 @@ export const upsertPayout = mutation({
     dueAt: v.number(),
   },
   handler: async (ctx, { id, ...data }) => {
+    await requireUser(ctx);
     if (id) {
       await ctx.db.patch(id, data);
       return id;
@@ -95,6 +101,7 @@ export const upsertPayout = mutation({
 export const removePayout = mutation({
   args: { id: v.id("kreatorPayouts") },
   handler: async (ctx, { id }) => {
+    await requireUser(ctx);
     await ctx.db.delete(id);
   },
 });
