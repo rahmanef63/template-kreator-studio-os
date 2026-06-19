@@ -1,4 +1,4 @@
-import { JournalView } from "@/components/templates/kreator-studio/slices/admin/journal/JournalView";
+import { JournalView } from "@/features/admin/journal/JournalView";
 export default function Page() {
   return <JournalView />;
 }

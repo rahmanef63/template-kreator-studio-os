@@ -1,4 +1,4 @@
-import { PlannerView } from "@/components/templates/kreator-studio/slices/admin/planner/PlannerView";
+import { PlannerView } from "@/features/admin/planner/PlannerView";
 export default function Page() {
   return <PlannerView />;
 }

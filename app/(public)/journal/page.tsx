@@ -1,4 +1,4 @@
-import { JournalListPage } from "@/components/templates/kreator-studio/slices/journal/JournalListPage";
+import { JournalListPage } from "@/features/journal/JournalListPage";
 
 export default function Page() {
   return <JournalListPage />;

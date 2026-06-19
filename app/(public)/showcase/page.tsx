@@ -1,4 +1,4 @@
-import { ShowcasePage } from "@/components/templates/kreator-studio/slices/showcase/ShowcasePage";
+import { ShowcasePage } from "@/features/showcase/ShowcasePage";
 
 // Rendered at request time: the page mounts <CommentsSection> which calls
 // useConvexAuth(), and the Convex auth provider is client-only (see

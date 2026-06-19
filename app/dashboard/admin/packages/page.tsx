@@ -1,4 +1,4 @@
-import { PackagesView } from "@/components/templates/kreator-studio/slices/admin/packages/PackagesView";
+import { PackagesView } from "@/features/admin/packages/PackagesView";
 export default function Page() {
   return <PackagesView />;
 }

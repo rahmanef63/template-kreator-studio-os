@@ -1,4 +1,4 @@
-import { ScriptsView } from "@/components/templates/kreator-studio/slices/admin/scripts/ScriptsView";
+import { ScriptsView } from "@/features/admin/scripts/ScriptsView";
 export default function Page() {
   return <ScriptsView />;
 }

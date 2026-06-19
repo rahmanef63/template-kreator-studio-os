@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CheckoutPage } from "@/components/templates/kreator-studio/slices/checkout/CheckoutPage";
+import { CheckoutPage } from "@/features/checkout/CheckoutPage";
 
 export const metadata: Metadata = { title: "Checkout" };
 

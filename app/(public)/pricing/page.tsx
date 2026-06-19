@@ -1,4 +1,4 @@
-import { PricingPage } from "@/components/templates/kreator-studio/slices/pricing/PricingPage";
+import { PricingPage } from "@/features/pricing/PricingPage";
 
 export default function Page() {
   return <PricingPage />;

@@ -1,4 +1,4 @@
-import { PerformanceView } from "@/components/templates/kreator-studio/slices/admin/performance/PerformanceView";
+import { PerformanceView } from "@/features/admin/performance/PerformanceView";
 export default function Page() {
   return <PerformanceView />;
 }

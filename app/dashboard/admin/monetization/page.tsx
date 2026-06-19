@@ -1,4 +1,4 @@
-import { MonetizationView } from "@/components/templates/kreator-studio/slices/admin/monetization/MonetizationView";
+import { MonetizationView } from "@/features/admin/monetization/MonetizationView";
 export default function Page() {
   return <MonetizationView />;
 }

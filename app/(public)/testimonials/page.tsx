@@ -1,4 +1,4 @@
-import { TestimonialsPage } from "@/components/templates/kreator-studio/slices/testimonials/TestimonialsPage";
+import { TestimonialsPage } from "@/features/testimonials/TestimonialsPage";
 
 export default function Page() {
   return <TestimonialsPage />;

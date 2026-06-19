@@ -1,4 +1,4 @@
-import { OrdersView } from "@/components/templates/kreator-studio/slices/admin/orders/OrdersView";
+import { OrdersView } from "@/features/admin/orders/OrdersView";
 export default function Page() {
   return <OrdersView />;
 }
