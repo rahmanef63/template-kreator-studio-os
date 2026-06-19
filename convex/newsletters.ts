@@ -7,8 +7,12 @@ const STATUS = v.union(v.literal("draft"), v.literal("scheduled"), v.literal("se
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    if (!(await optionalUser(ctx))) return [];
-    return ctx.db.query("kreatorNewsletters").order("desc").take(200);
+    const rows = await ctx.db.query("kreatorNewsletters").order("desc").take(200);
+    if (await optionalUser(ctx)) return rows;
+    // Public newsletter archive (PostsPage) renders issues as content; show
+    // published (non-draft) issues to anon, keep drafts admin-only. (No PII in
+    // this table — cycle 1's blanket [] simply emptied a public archive.)
+    return rows.filter((n) => n.status !== "draft");
   },
 });
 
