@@ -2,10 +2,16 @@
 
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Reveal, Stagger } from "@/components/templates/_shared/motion";
 import { PUBLIC_BASE } from "../../shared/nav-config";
+
+const DEFAULT_HEADLINE = "Lorem Kreator — full-time creator dari Indonesia.";
+const DEFAULT_INTRO =
+  "Saya bantu creator dan small business build audience yang berarti — bukan vanity metrics. Newsletter ini adalah catatan apa yang saya pelajari minggu ini.";
 
 const PRINCIPLES = [
   "Konsistensi > sempurna — ship tiap minggu, refine seiring jalan.",
@@ -22,18 +28,25 @@ const TIMELINE = [
 ];
 
 export function AboutPage() {
+  const settings = useQuery(api.settings.get);
+  const headline = settings?.aboutHeadline || DEFAULT_HEADLINE;
+  const intro = settings?.seoDescription || DEFAULT_INTRO;
+  const photo = settings?.aboutImageUrl;
   return (
     <section className="mx-auto max-w-5xl px-6 py-16">
       <Reveal>
         <header>
+          {photo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={photo}
+              alt={headline}
+              className="mb-6 h-40 w-40 rounded-2xl border border-border/60 object-cover"
+            />
+          )}
           <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">About</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">
-            Lorem Kreator — full-time creator dari Indonesia.
-          </h1>
-          <p className="mt-4 max-w-3xl text-muted-foreground">
-            Saya bantu creator dan small business build audience yang berarti — bukan vanity metrics.
-            Newsletter ini adalah catatan apa yang saya pelajari minggu ini.
-          </p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">{headline}</h1>
+          <p className="mt-4 max-w-3xl text-muted-foreground">{intro}</p>
           <Button asChild className="mt-6">
             <Link href={`${PUBLIC_BASE}/posts`}>Baca arsip <ArrowRight className="size-4" /></Link>
           </Button>
