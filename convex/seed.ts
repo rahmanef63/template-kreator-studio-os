@@ -141,6 +141,22 @@ const PAYOUTS = [
   { source: "GoTo — Brand narrative", kind: "sponsor" as const, amountIdr: 24_000_000, status: "in-review" as const, dueAt: future(21) },
 ];
 
+// About page — working principles + timeline. Migrated from the former
+// hardcoded PRINCIPLES / TIMELINE arrays in AboutPage.tsx.
+const PRINCIPLES = [
+  { text: "Konsistensi > sempurna — ship tiap minggu, refine seiring jalan.", order: 10 },
+  { text: "Voice unik > algoritma chasing — algoritma reward kreator yang otentik.", order: 20 },
+  { text: "Repurpose dulu, baru tambah platform — leverage konten yang ada.", order: 30 },
+  { text: "Newsletter > follower count — owned audience yang nilainya beda.", order: 40 },
+  { text: "Bahasa Indonesia bukan handicap — itu kekuatan untuk niche kamu.", order: 50 },
+];
+
+const TIMELINE = [
+  { year: "2026", milestone: "100K cross-platform followers, 12K newsletter subs." },
+  { year: "2024", milestone: "Pivot full-time content creation. First 1K subs newsletter." },
+  { year: "2022", milestone: "Mulai posting konsisten — IG + TikTok harian selama 1 tahun." },
+];
+
 // Keep in sync with components/templates/kreator-studio/shared/landing-seed.ts
 // SEED_LANDING_SECTIONS. `syncLanding` below pushes additions/order to an
 // already-seeded deployment without touching admin-edited copy.
@@ -194,6 +210,8 @@ async function insertAll(ctx: any) {
   for (const r of JOURNAL) await ctx.db.insert("kreatorJournal", r);
   for (const r of TESTIMONIALS) await ctx.db.insert("kreatorTestimonials", r);
   for (const r of FEATURED_CLIENTS) await ctx.db.insert("kreatorFeaturedClients", r);
+  for (const r of PRINCIPLES) await ctx.db.insert("kreatorPrinciples", r);
+  for (const r of TIMELINE) await ctx.db.insert("kreatorTimeline", r);
   for (const r of MON_SOURCES) await ctx.db.insert("kreatorMonetizationSources", r);
   for (const r of MON_MONTHS) await ctx.db.insert("kreatorMonetizationMonths", r);
   for (const r of PAYOUTS) await ctx.db.insert("kreatorPayouts", r);
@@ -214,6 +232,8 @@ async function insertAll(ctx: any) {
     journal: JOURNAL.length,
     testimonials: TESTIMONIALS.length,
     featuredClients: FEATURED_CLIENTS.length,
+    principles: PRINCIPLES.length,
+    timeline: TIMELINE.length,
     monetizationSources: MON_SOURCES.length,
     monetizationMonths: MON_MONTHS.length,
     payouts: PAYOUTS.length,
@@ -236,6 +256,8 @@ const CONTENT_TABLES = [
   "kreatorJournal",
   "kreatorTestimonials",
   "kreatorFeaturedClients",
+  "kreatorPrinciples",
+  "kreatorTimeline",
   "kreatorMonetizationSources",
   "kreatorMonetizationMonths",
   "kreatorPayouts",

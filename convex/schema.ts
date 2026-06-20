@@ -211,6 +211,17 @@ export default defineSchema({
     gradient: v.string(),
   }),
 
+  // --- About page: working principles + timeline (admin-editable) ---
+  kreatorPrinciples: defineTable({
+    text: v.string(),
+    order: v.number(),
+  }),
+
+  kreatorTimeline: defineTable({
+    year: v.string(),
+    milestone: v.string(),
+  }),
+
   // --- monetization ---
   kreatorMonetizationSources: defineTable({
     kind: MONETIZATION_KIND,

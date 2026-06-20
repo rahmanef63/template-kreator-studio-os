@@ -8,12 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Reveal, Stagger } from "@/features/_shared/motion";
 import { PUBLIC_BASE } from "@/features/_app/nav-config";
+import { usePrinciples, useTimeline } from "@/features/_app/store";
 
 const DEFAULT_HEADLINE = "Lorem Kreator — full-time creator dari Indonesia.";
 const DEFAULT_INTRO =
   "Saya bantu creator dan small business build audience yang berarti — bukan vanity metrics. Newsletter ini adalah catatan apa yang saya pelajari minggu ini.";
 
-const PRINCIPLES = [
+// Seed fallback — keeps the demo non-blank when the tables are empty (mirrors
+// the convex/seed.ts defaults). Admin edits override these via the store.
+const DEFAULT_PRINCIPLES = [
   "Konsistensi > sempurna — ship tiap minggu, refine seiring jalan.",
   "Voice unik > algoritma chasing — algoritma reward kreator yang otentik.",
   "Repurpose dulu, baru tambah platform — leverage konten yang ada.",
@@ -21,7 +24,7 @@ const PRINCIPLES = [
   "Bahasa Indonesia bukan handicap — itu kekuatan untuk niche kamu.",
 ];
 
-const TIMELINE = [
+const DEFAULT_TIMELINE = [
   { year: "2026", milestone: "100K cross-platform followers, 12K newsletter subs." },
   { year: "2024", milestone: "Pivot full-time content creation. First 1K subs newsletter." },
   { year: "2022", milestone: "Mulai posting konsisten — IG + TikTok harian selama 1 tahun." },
@@ -32,6 +35,18 @@ export function AboutPage() {
   const headline = settings?.aboutHeadline || DEFAULT_HEADLINE;
   const intro = settings?.seoDescription || DEFAULT_INTRO;
   const photo = settings?.aboutImageUrl;
+
+  const principleRows = usePrinciples();
+  const principles =
+    principleRows.length > 0
+      ? [...principleRows].sort((a, b) => a.order - b.order).map((p) => p.text)
+      : DEFAULT_PRINCIPLES;
+
+  const timelineRows = useTimeline();
+  const timeline =
+    timelineRows.length > 0
+      ? [...timelineRows].sort((a, b) => b.year.localeCompare(a.year))
+      : DEFAULT_TIMELINE;
   return (
     <section className="mx-auto max-w-5xl px-6 py-16">
       <Reveal>
@@ -57,7 +72,7 @@ export function AboutPage() {
         <h2 className="text-2xl font-semibold tracking-tight">Prinsip kerja</h2>
         <div className="mt-6 grid gap-3 md:grid-cols-2">
           <Stagger itemClassName="h-full">
-            {PRINCIPLES.map((p) => (
+            {principles.map((p) => (
               <Card
                 key={p}
                 className="h-full border-border/60 bg-card/60 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg"
@@ -75,7 +90,7 @@ export function AboutPage() {
       <section className="mt-16">
         <h2 className="text-2xl font-semibold tracking-tight">Timeline</h2>
         <ol className="mt-6 space-y-3 border-l border-border/60 pl-6">
-          {TIMELINE.map((t, i) => (
+          {timeline.map((t, i) => (
             <li key={t.year} className="relative">
               <Reveal variant="fade-left" delay={Math.min(i * 60, 360)}>
                 <span className="absolute -left-[29px] top-1.5 grid size-3 place-items-center rounded-full border border-border bg-background">

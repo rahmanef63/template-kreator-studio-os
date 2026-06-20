@@ -43,6 +43,10 @@ export function useConvexDispatch(state: State): (a: Action) => void {
   const mTestimonialRemove = useMutation(api.testimonials.remove);
   const mFeaturedClientUpsert = useMutation(api.featuredClients.upsert);
   const mFeaturedClientRemove = useMutation(api.featuredClients.remove);
+  const mPrincipleUpsert = useMutation(api.principles.upsert);
+  const mPrincipleRemove = useMutation(api.principles.remove);
+  const mTimelineUpsert = useMutation(api.timeline.upsert);
+  const mTimelineRemove = useMutation(api.timeline.remove);
 
   const knownIds = React.useMemo(
     () => ({
@@ -59,6 +63,8 @@ export function useConvexDispatch(state: State): (a: Action) => void {
       journal: new Set(state.journal.map((j) => j.id)),
       testimonials: new Set(state.testimonials.map((t) => t.id)),
       featuredClients: new Set(state.featuredClients.map((f) => f.id)),
+      principles: new Set(state.principles.map((p) => p.id)),
+      timeline: new Set(state.timeline.map((t) => t.id)),
     }),
     [state],
   );
@@ -238,6 +244,30 @@ export function useConvexDispatch(state: State): (a: Action) => void {
         }
         case "featuredClient.delete":
           void mFeaturedClientRemove({ id: action.id as Id<"kreatorFeaturedClients"> }).catch(fail);
+          break;
+
+        case "principle.upsert": {
+          const { id, ...d } = action.principle;
+          void (knownIds.principles.has(id)
+            ? mPrincipleUpsert({ id: id as Id<"kreatorPrinciples">, ...d })
+            : mPrincipleUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "principle.delete":
+          void mPrincipleRemove({ id: action.id as Id<"kreatorPrinciples"> }).catch(fail);
+          break;
+
+        case "timeline.upsert": {
+          const { id, ...d } = action.entry;
+          void (knownIds.timeline.has(id)
+            ? mTimelineUpsert({ id: id as Id<"kreatorTimeline">, ...d })
+            : mTimelineUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "timeline.delete":
+          void mTimelineRemove({ id: action.id as Id<"kreatorTimeline"> }).catch(fail);
           break;
 
         case "LANDING_UPSERT": {

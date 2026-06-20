@@ -44,6 +44,8 @@ function Provider({ children }: { children: React.ReactNode }) {
   const journal = useQuery(api.journal.list, {});
   const testimonials = useQuery(api.testimonials.list, {});
   const featuredClients = useQuery(api.featuredClients.list, {});
+  const principles = useQuery(api.principles.list, {});
+  const timeline = useQuery(api.timeline.list, {});
   const monSources = useQuery(api.monetization.listSources, {});
   const monMonths = useQuery(api.monetization.listMonths, {});
   const payouts = useQuery(api.monetization.listPayouts, {});
@@ -53,7 +55,7 @@ function Provider({ children }: { children: React.ReactNode }) {
   const queries = [
     contents, voices, scripts, carousels, assets, newsletters, performance,
     comments, packages, showcase, journal, testimonials, featuredClients,
-    monSources, monMonths, payouts, pageRows, landingRows,
+    principles, timeline, monSources, monMonths, payouts, pageRows, landingRows,
   ];
   const ready = queries.every((q) => q !== undefined);
   const progress = Math.round((queries.filter((q) => q !== undefined).length / queries.length) * 100);
@@ -73,13 +75,15 @@ function Provider({ children }: { children: React.ReactNode }) {
       journal: withId(journal),
       testimonials: withId(testimonials),
       featuredClients: withId(featuredClients),
+      principles: withId(principles),
+      timeline: withId(timeline),
       monetizationSources: withId(monSources),
       monetizationMonths: withId(monMonths),
       payouts: withId(payouts),
       pages: (pageRows ?? []) as PageEntry[],
       landingSections: (landingRows ?? []) as LandingSection[],
     }),
-    [contents, voices, scripts, carousels, assets, newsletters, performance, comments, packages, showcase, journal, testimonials, featuredClients, monSources, monMonths, payouts, pageRows, landingRows],
+    [contents, voices, scripts, carousels, assets, newsletters, performance, comments, packages, showcase, journal, testimonials, featuredClients, principles, timeline, monSources, monMonths, payouts, pageRows, landingRows],
   );
 
   const dispatch = useConvexDispatch(state);
@@ -157,6 +161,8 @@ export const useShowcase = () => useStore().state.showcase;
 export const useJournal = () => useStore().state.journal;
 export const useTestimonials = () => useStore().state.testimonials;
 export const useFeaturedClients = () => useStore().state.featuredClients;
+export const usePrinciples = () => useStore().state.principles;
+export const useTimeline = () => useStore().state.timeline;
 export const useMonetization = () => { const s = useStore().state; return { sources: s.monetizationSources, months: s.monetizationMonths, payouts: s.payouts }; };
 
 export { nid, slugify, fmtDate, rel } from "@/features/_shared/utils";

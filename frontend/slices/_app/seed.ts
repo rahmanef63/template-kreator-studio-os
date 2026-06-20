@@ -18,8 +18,10 @@ import type {
   ContentItem,
   NewsletterIssue,
   PerformanceMetric,
+  Principle,
   Script,
   State,
+  TimelineEntry,
   VoiceProfile,
 } from "./types";
 
@@ -266,6 +268,20 @@ export const SEED_COMMENTS: CommentDraft[] = [
   },
 ];
 
+export const SEED_PRINCIPLES: Principle[] = [
+  { id: "prn-1", text: "Konsistensi > sempurna — ship tiap minggu, refine seiring jalan.", order: 10 },
+  { id: "prn-2", text: "Voice unik > algoritma chasing — algoritma reward kreator yang otentik.", order: 20 },
+  { id: "prn-3", text: "Repurpose dulu, baru tambah platform — leverage konten yang ada.", order: 30 },
+  { id: "prn-4", text: "Newsletter > follower count — owned audience yang nilainya beda.", order: 40 },
+  { id: "prn-5", text: "Bahasa Indonesia bukan handicap — itu kekuatan untuk niche kamu.", order: 50 },
+];
+
+export const SEED_TIMELINE: TimelineEntry[] = [
+  { id: "tml-1", year: "2026", milestone: "100K cross-platform followers, 12K newsletter subs." },
+  { id: "tml-2", year: "2024", milestone: "Pivot full-time content creation. First 1K subs newsletter." },
+  { id: "tml-3", year: "2022", milestone: "Mulai posting konsisten — IG + TikTok harian selama 1 tahun." },
+];
+
 export const SEED_STATE: State = {
   contents: SEED_CONTENTS,
   voices: SEED_VOICES,
@@ -280,6 +296,8 @@ export const SEED_STATE: State = {
   journal: SEED_JOURNAL,
   testimonials: SEED_TESTIMONIALS,
   featuredClients: SEED_FEATURED_CLIENTS,
+  principles: SEED_PRINCIPLES,
+  timeline: SEED_TIMELINE,
   monetizationSources: SEED_MONETIZATION_SOURCES,
   monetizationMonths: SEED_MONETIZATION_MONTHS,
   payouts: SEED_PAYOUTS,

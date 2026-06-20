@@ -140,6 +140,20 @@ export type JournalEntry = {
   publishedAt: number;
 };
 
+/** About-page working principle (single line of copy). */
+export type Principle = {
+  id: string;
+  text: string;
+  order: number;
+};
+
+/** About-page timeline milestone (year + one-liner). */
+export type TimelineEntry = {
+  id: string;
+  year: string;
+  milestone: string;
+};
+
 export type State = {
   contents: ContentItem[];
   voices: VoiceProfile[];
@@ -154,6 +168,8 @@ export type State = {
   journal: JournalEntry[];
   testimonials: Testimonial[];
   featuredClients: FeaturedClient[];
+  principles: Principle[];
+  timeline: TimelineEntry[];
   monetizationSources: MonetizationSource[];
   monetizationMonths: MonetizationMonth[];
   payouts: Payout[];
@@ -196,5 +212,9 @@ export type Action =
   | { type: "testimonial.delete"; id: string }
   | { type: "featuredClient.upsert"; client: FeaturedClient }
   | { type: "featuredClient.delete"; id: string }
+  | { type: "principle.upsert"; principle: Principle }
+  | { type: "principle.delete"; id: string }
+  | { type: "timeline.upsert"; entry: TimelineEntry }
+  | { type: "timeline.delete"; id: string }
   | { type: "hydrate"; state: State }
   | { type: "reset" };
