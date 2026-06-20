@@ -15,6 +15,7 @@ export const SEED_LANDING_SECTIONS: LandingSection[] = [
     subtitle:
       "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.",
     enabled: true,
+    imageUrl: "/hero.webp",
     config: '{"badge":"Issue mingguan untuk creator"}',
   },
   {
