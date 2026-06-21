@@ -161,7 +161,7 @@ const TIMELINE = [
 // SEED_LANDING_SECTIONS. `syncLanding` below pushes additions/order to an
 // already-seeded deployment without touching admin-edited copy.
 const LANDING = [
-  { id: "ls-hero", order: 10, kind: "hero", title: "Newsletter & content notes untuk creator yang serius.", subtitle: "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.", enabled: true, imageUrl: "/hero.webp", config: '{"badge":"Issue mingguan untuk creator"}' },
+  { id: "ls-hero", order: 10, kind: "hero", title: "Newsletter & content notes untuk creator yang serius.", subtitle: "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.", enabled: true, config: '{"badge":"Issue mingguan untuk creator"}' },
   { id: "ls-stats", order: 15, kind: "stats", title: "Angka yang jalan tiap minggu", subtitle: "Subscribers, views, dan brand yang sudah collab — live dari workspace ini.", enabled: true },
   { id: "ls-features", order: 20, kind: "features", title: "Apa yang ada di balik newsletter ini", subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.", enabled: true },
   { id: "ls-portfolio", order: 30, kind: "portfolio", title: "Highlight social posts", subtitle: "Yang paling resonance bulan ini di IG, TikTok, dan YouTube.", enabled: true },
@@ -280,8 +280,8 @@ export const run = mutation({
 
 // Demo/CLI seed (NO auth, internal — run via `npx convex run seed:seedDemo`).
 // For SHOWCASE/demo deployments only. Refills the content tables for a full
-// demo and ensures the hero landing image, WITHOUT wiping admin-edited landing
-// copy. Idempotent.
+// demo and seeds the landing lineup only when empty, WITHOUT wiping
+// admin-edited landing copy. Idempotent.
 export const seedDemo = internalMutation({
   args: {},
   handler: async (ctx) => {
@@ -290,22 +290,12 @@ export const seedDemo = internalMutation({
       for (const row of await ctx.db.query(t).take(1000)) await ctx.db.delete(row._id);
     }
     const counts = await insertAll(ctx, { landing: false });
-    const hero = await ctx.db
-      .query("landingSections")
-      .withIndex("by_sectionId", (q) => q.eq("sectionId", "ls-hero"))
-      .unique();
-    let heroImage = false;
-    if (hero) {
-      const d = hero.data as Record<string, unknown>;
-      if (!d.imageUrl) {
-        await ctx.db.patch(hero._id, { data: { ...d, imageUrl: "/hero.webp" } });
-        heroImage = true;
-      }
-    } else {
+    // Seed landing only if the table is empty (preserve admin-edited copy).
+    const hasLanding = await ctx.db.query("landingSections").first();
+    if (!hasLanding) {
       for (const s of LANDING) await ctx.db.insert("landingSections", { sectionId: s.id, data: s });
-      heroImage = true;
     }
-    return { ...counts, heroImage };
+    return counts;
   },
 });
 

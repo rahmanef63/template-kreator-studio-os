@@ -42,6 +42,7 @@ import {
   PostsTeaser,
   ShowcaseTeaser,
 } from "./LandingTeasers";
+import { HERO_IMG } from "./home-data";
 
 interface Deps {
   contents: ContentItem[];
@@ -67,12 +68,12 @@ export function renderLanding(section: LandingSection, deps: Deps) {
         <LandingSectionShell section={section}>
           <HeroBlock
             glow
+            backgroundImage={HERO_IMG}
             badge={parseConfigBadge(section.config) ?? "Issue mingguan untuk creator"}
             title={section.title}
             subtitle={section.subtitle}
             primaryCta={{ label: "Baca issue terbaru", href: `${PUBLIC_BASE}/posts` }}
             secondaryCta={{ label: "Kerja sama brand", href: `${PUBLIC_BASE}/pricing` }}
-            image={section.imageUrl ? { url: section.imageUrl, ratio: section.imageRatio } : undefined}
           />
         </LandingSectionShell>
       );
