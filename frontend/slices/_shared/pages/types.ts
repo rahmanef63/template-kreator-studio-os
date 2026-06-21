@@ -8,7 +8,7 @@ export type CtaLink = { label: string; href: string };
 export type PageBlock =
   | { kind: "hero"; headline: string; sub?: string; cta?: CtaLink }
   | { kind: "text"; heading?: string; body: string }
-  | { kind: "feature-list"; heading?: string; items: { title: string; body: string; icon?: string }[] }
+  | { kind: "feature-list"; heading?: string; items: { title: string; body: string }[] }
   | { kind: "cta"; headline: string; sub?: string; cta: CtaLink }
   | { kind: "logo-cloud"; heading?: string; logos: { label: string; alt?: string }[] }
   | { kind: "testimonial"; quote: string; author: string; role?: string }

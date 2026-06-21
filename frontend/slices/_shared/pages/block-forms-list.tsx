@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { IconPickerPopover, DynamicIcon } from "@/features/icon-picker";
 import type { PageBlock } from "./types";
 
 type Narrow<K extends PageBlock["kind"]> = Extract<PageBlock, { kind: K }>;
@@ -68,18 +67,11 @@ export function FeatureListForm({ block, onChange }: FormProps<"feature-list">) 
       <Repeater
         label="Items"
         items={block.items}
-        empty={{ title: "", body: "", icon: "" }}
+        empty={{ title: "", body: "" }}
         onChange={(items) => onChange({ ...block, items })}
         renderRow={(it, set) => (
           <>
-            <div className="flex items-center gap-2">
-              <IconPickerPopover value={it.icon ?? ""} onChange={(next) => set({ icon: next })}>
-                <Button type="button" variant="outline" size="icon" aria-label="Pick feature icon">
-                  {it.icon ? <DynamicIcon value={it.icon} size={18} /> : "+"}
-                </Button>
-              </IconPickerPopover>
-              <Input placeholder="Title" value={it.title} onChange={(e) => set({ title: e.target.value })} />
-            </div>
+            <Input placeholder="Title" value={it.title} onChange={(e) => set({ title: e.target.value })} />
             <Textarea placeholder="Body" rows={2} value={it.body} onChange={(e) => set({ body: e.target.value })} />
           </>
         )}

@@ -6,16 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import {
-  ImagePickerButton,
-  ImageBanner,
-  parseImage,
-  imageRef,
-  unsplashSearchVia,
-} from "@/features/image-picker";
 import type { CtaLink, PageBlock } from "./types";
-
-const unsplash = unsplashSearchVia("/api/unsplash");
 
 type Narrow<K extends PageBlock["kind"]> = Extract<PageBlock, { kind: K }>;
 type FormProps<K extends PageBlock["kind"]> = {
@@ -46,28 +37,9 @@ export function ImageGalleryForm({ block, onChange }: FormProps<"image-gallery">
           <div key={i} className="rounded-md border p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">#{i + 1}</span>
-              <div className="flex items-center gap-2">
-                <ImagePickerButton
-                  label={img.src ? "Change" : "Choose image"}
-                  title={`Image #${i + 1}`}
-                  searchUnsplash={unsplash}
-                  onChange={(picked) => setAt(i, { src: imageRef(picked) ?? "" })}
-                />
-                <Button type="button" variant="ghost" size="sm" onClick={() => remove(i)}>Remove</Button>
-              </div>
+              <Button type="button" variant="ghost" size="sm" onClick={() => remove(i)}>Remove</Button>
             </div>
-            {img.src ? (
-              <ImageBanner
-                image={parseImage(img.src)}
-                searchUnsplash={unsplash}
-                onChange={(next) => setAt(i, { src: next ? imageRef(next) ?? "" : "" })}
-                className="h-32 w-full overflow-hidden rounded-md border border-border/60"
-              />
-            ) : (
-              <p className="rounded-md border border-dashed border-border/60 px-3 py-5 text-center text-xs text-muted-foreground">
-                No image yet — pick a colour, gradient, paste a URL, or browse Unsplash.
-              </p>
-            )}
+            <Input placeholder="Source URL" value={img.src} onChange={(e) => setAt(i, { src: e.target.value })} />
             <Input placeholder="Alt text" value={img.alt} onChange={(e) => setAt(i, { alt: e.target.value })} />
           </div>
         ))}
