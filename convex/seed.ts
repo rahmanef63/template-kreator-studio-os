@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { mutation, internalMutation } from "./_generated/server";
 import { ConvexError } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { requireUser } from "./_shared/auth";
@@ -161,7 +161,7 @@ const TIMELINE = [
 // SEED_LANDING_SECTIONS. `syncLanding` below pushes additions/order to an
 // already-seeded deployment without touching admin-edited copy.
 const LANDING = [
-  { id: "ls-hero", order: 10, kind: "hero", title: "Newsletter & content notes untuk creator yang serius.", subtitle: "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.", enabled: true, config: '{"badge":"Issue mingguan untuk creator"}' },
+  { id: "ls-hero", order: 10, kind: "hero", title: "Newsletter & content notes untuk creator yang serius.", subtitle: "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.", enabled: true, imageUrl: "/hero.webp", config: '{"badge":"Issue mingguan untuk creator"}' },
   { id: "ls-stats", order: 15, kind: "stats", title: "Angka yang jalan tiap minggu", subtitle: "Subscribers, views, dan brand yang sudah collab — live dari workspace ini.", enabled: true },
   { id: "ls-features", order: 20, kind: "features", title: "Apa yang ada di balik newsletter ini", subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.", enabled: true },
   { id: "ls-portfolio", order: 30, kind: "portfolio", title: "Highlight social posts", subtitle: "Yang paling resonance bulan ini di IG, TikTok, dan YouTube.", enabled: true },
@@ -196,7 +196,7 @@ const PAGES = [
 ];
 
 // All demo content inserts (no wipe). Shared by `run` and `seedSample`.
-async function insertAll(ctx: any) {
+async function insertAll(ctx: any, opts: { landing?: boolean } = {}) {
   for (const r of CONTENTS) await ctx.db.insert("kreatorContents", r);
   for (const r of VOICES) await ctx.db.insert("kreatorVoices", r);
   for (const r of SCRIPTS) await ctx.db.insert("kreatorScripts", r);
@@ -215,7 +215,7 @@ async function insertAll(ctx: any) {
   for (const r of MON_SOURCES) await ctx.db.insert("kreatorMonetizationSources", r);
   for (const r of MON_MONTHS) await ctx.db.insert("kreatorMonetizationMonths", r);
   for (const r of PAYOUTS) await ctx.db.insert("kreatorPayouts", r);
-  for (const s of LANDING) await ctx.db.insert("landingSections", { sectionId: s.id, data: s });
+  if (opts.landing !== false) for (const s of LANDING) await ctx.db.insert("landingSections", { sectionId: s.id, data: s });
   for (const p of PAGES) await ctx.db.insert("pages", { entryId: p.id, slug: p.slug, data: p });
 
   return {
@@ -275,6 +275,37 @@ export const run = mutation({
       for (const row of await ctx.db.query(t).take(1000)) await ctx.db.delete(row._id);
     }
     return insertAll(ctx);
+  },
+});
+
+// Demo/CLI seed (NO auth, internal — run via `npx convex run seed:seedDemo`).
+// For SHOWCASE/demo deployments only. Refills the content tables for a full
+// demo and ensures the hero landing image, WITHOUT wiping admin-edited landing
+// copy. Idempotent.
+export const seedDemo = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    for (const t of CONTENT_TABLES) {
+      if (t === "landingSections") continue;
+      for (const row of await ctx.db.query(t).take(1000)) await ctx.db.delete(row._id);
+    }
+    const counts = await insertAll(ctx, { landing: false });
+    const hero = await ctx.db
+      .query("landingSections")
+      .withIndex("by_sectionId", (q) => q.eq("sectionId", "ls-hero"))
+      .unique();
+    let heroImage = false;
+    if (hero) {
+      const d = hero.data as Record<string, unknown>;
+      if (!d.imageUrl) {
+        await ctx.db.patch(hero._id, { data: { ...d, imageUrl: "/hero.webp" } });
+        heroImage = true;
+      }
+    } else {
+      for (const s of LANDING) await ctx.db.insert("landingSections", { sectionId: s.id, data: s });
+      heroImage = true;
+    }
+    return { ...counts, heroImage };
   },
 });
 
