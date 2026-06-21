@@ -69,6 +69,8 @@ export function renderLanding(section: LandingSection, deps: Deps) {
           <HeroBlock
             glow
             backgroundImage={HERO_IMG}
+            layers={section.layers}
+            shade={section.shade}
             badge={parseConfigBadge(section.config) ?? "Issue mingguan untuk creator"}
             title={section.title}
             subtitle={section.subtitle}

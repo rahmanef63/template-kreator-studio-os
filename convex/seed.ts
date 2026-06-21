@@ -161,7 +161,7 @@ const TIMELINE = [
 // SEED_LANDING_SECTIONS. `syncLanding` below pushes additions/order to an
 // already-seeded deployment without touching admin-edited copy.
 const LANDING = [
-  { id: "ls-hero", order: 10, kind: "hero", title: "Newsletter & content notes untuk creator yang serius.", subtitle: "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.", enabled: true, config: '{"badge":"Issue mingguan untuk creator"}' },
+  { id: "ls-hero", order: 10, kind: "hero", title: "Newsletter & content notes untuk creator yang serius.", subtitle: "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.", enabled: true, config: '{"badge":"Issue mingguan untuk creator"}', layers: [{ id: "hero-photo", type: "image", placement: "background", opacity: 100, enabled: true, url: "/hero.webp" }] },
   { id: "ls-stats", order: 15, kind: "stats", title: "Angka yang jalan tiap minggu", subtitle: "Subscribers, views, dan brand yang sudah collab — live dari workspace ini.", enabled: true },
   { id: "ls-features", order: 20, kind: "features", title: "Apa yang ada di balik newsletter ini", subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.", enabled: true },
   { id: "ls-portfolio", order: 30, kind: "portfolio", title: "Highlight social posts", subtitle: "Yang paling resonance bulan ini di IG, TikTok, dan YouTube.", enabled: true },

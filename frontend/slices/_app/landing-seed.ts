@@ -16,6 +16,9 @@ export const SEED_LANDING_SECTIONS: LandingSection[] = [
       "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.",
     enabled: true,
     config: '{"badge":"Issue mingguan untuk creator"}',
+    layers: [
+      { id: "hero-photo", type: "image", placement: "background", opacity: 100, enabled: true, url: "/hero.webp" },
+    ],
   },
   {
     id: "ls-stats",
