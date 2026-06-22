@@ -42,7 +42,6 @@ import {
   PostsTeaser,
   ShowcaseTeaser,
 } from "./LandingTeasers";
-import { HERO_IMG } from "./home-data";
 
 interface Deps {
   contents: ContentItem[];
@@ -68,7 +67,6 @@ export function renderLanding(section: LandingSection, deps: Deps) {
         <LandingSectionShell section={section}>
           <HeroBlock
             glow
-            backgroundImage={HERO_IMG}
             layers={section.layers}
             shade={section.shade}
             badge={parseConfigBadge(section.config) ?? "Issue mingguan untuk creator"}

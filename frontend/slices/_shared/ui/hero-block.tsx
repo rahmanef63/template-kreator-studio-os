@@ -20,6 +20,10 @@ import type { Cta } from "../types/common";
 const delayAt = (ms: number) =>
   ({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
 
+/** Ambient full-bleed hero artwork (lives in /public). Rendered as the glow
+ *  backdrop's background image, never as a foreground card. */
+export const HERO_IMG = "/hero.webp";
+
 /**
  * Shared hero block — used by every public template's home page.
  *
@@ -39,10 +43,9 @@ export function HeroBlock({
   variant = "centered",
   sidekick,
   image,
-  backgroundImage,
+  glow = false,
   layers,
   shade = false,
-  glow = false,
   className,
 }: {
   eyebrow?: string;
@@ -56,16 +59,15 @@ export function HeroBlock({
   /** Foreground illustration. Auto-promotes variant to "split" when set
    *  and no sidekick is provided. */
   image?: { url: string; ratio?: AspectRatio; alt?: string };
-  /** Ambient full-bleed background image. Used as the back-compat fallback
-   *  for the background layer band when no admin layer overrides it. */
-  backgroundImage?: string;
+  /** Render the orange/emerald blur backdrop band. When set, the background
+   *  is composed via HeroLayers (admin `layers`, or HERO_IMG fallback). */
+  glow?: boolean;
   /** Admin-composed background / foreground layers. A background layer
-   *  replaces `backgroundImage`; otherwise `backgroundImage` is the fallback. */
+   *  replaces the HERO_IMG fallback; otherwise HERO_IMG is the fallback. */
   layers?: HeroLayer[];
   /** Readability scrim + brand glow. Off by default → image shows in full
-   *  real color; on → gradient + glow for legibility. */
+   *  real color; on → gradient + glow blobs for legibility. */
   shade?: boolean;
-  glow?: boolean;
   className?: string;
 }) {
   const effectiveVariant =
@@ -84,25 +86,24 @@ export function HeroBlock({
         className,
       )}
     >
-      {/* Background image band — admin layers, or `backgroundImage` fallback
-          (full opacity = real colors). */}
-      <HeroLayers placement="background" layers={layers} fallbackImg={backgroundImage} />
-      {/* Readability scrim — opt-in via the `shade` toggle so the image can
-          show in full real color by default. */}
-      {shade && (backgroundImage || (layers && layers.length > 0)) && (
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/85 to-background" />
-        </div>
-      )}
       {glow && (
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
-          <div className="motion-blob absolute -right-40 top-32 h-96 w-96 rounded-full bg-orange-500/15 blur-3xl" />
-          <div
-            className="motion-blob absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl"
-            style={{ animationDelay: "-8s", animationDuration: "22s" }}
-          />
-        </div>
+        <>
+          {/* Background image band — admin layers, or HERO_IMG fallback at
+              full opacity (real colors). */}
+          <HeroLayers placement="background" layers={layers} fallbackImg={HERO_IMG} />
+          {/* Readability scrim + brand glow — opt-in via `shade` so the image
+              shows in full real color by default. */}
+          {shade && (
+            <div className="absolute inset-0 -z-10 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/90 to-background" />
+              <div className="motion-blob absolute -right-40 top-32 h-96 w-96 rounded-full bg-orange-500/15 blur-3xl" />
+              <div
+                className="motion-blob absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl"
+                style={{ animationDelay: "-8s", animationDuration: "22s" }}
+              />
+            </div>
+          )}
+        </>
       )}
       <div
         className={cn(
@@ -169,8 +170,9 @@ export function HeroBlock({
           </div>
         )}
       </div>
-      {/* Foreground layers — above the content, click-through. */}
-      <HeroLayers placement="foreground" layers={layers} />
+      {/* Foreground layers — above the content, click-through. Only the glow
+          variant composes hero layers. */}
+      {glow && <HeroLayers placement="foreground" layers={layers} />}
     </section>
   );
 }
