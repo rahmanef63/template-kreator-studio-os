@@ -15,6 +15,8 @@ import {
   PricingSection,
   StatsSection,
   TestimonialsSection,
+  parseConfigObject,
+  cfgString,
 } from "@/features/_shared/landing/sections";
 import type { LandingSection } from "@/features/_shared/landing/types";
 import { ADMIN_BASE, PUBLIC_BASE } from "@/features/_app/nav-config";
@@ -62,7 +64,8 @@ interface Deps {
  */
 export function renderLanding(section: LandingSection, deps: Deps) {
   switch (section.kind) {
-    case "hero":
+    case "hero": {
+      const cfg = parseConfigObject(section.config);
       return (
         <LandingSectionShell section={section}>
           <HeroBlock
@@ -72,11 +75,18 @@ export function renderLanding(section: LandingSection, deps: Deps) {
             badge={parseConfigBadge(section.config) ?? "Issue mingguan untuk creator"}
             title={section.title}
             subtitle={section.subtitle}
-            primaryCta={{ label: "Baca issue terbaru", href: `${PUBLIC_BASE}/posts` }}
-            secondaryCta={{ label: "Kerja sama brand", href: `${PUBLIC_BASE}/pricing` }}
+            primaryCta={{
+              label: cfgString(cfg, "ctaPrimaryLabel") ?? "Baca issue terbaru",
+              href: cfgString(cfg, "ctaPrimaryHref") ?? `${PUBLIC_BASE}/posts`,
+            }}
+            secondaryCta={{
+              label: cfgString(cfg, "ctaSecondaryLabel") ?? "Kerja sama brand",
+              href: cfgString(cfg, "ctaSecondaryHref") ?? `${PUBLIC_BASE}/pricing`,
+            }}
           />
         </LandingSectionShell>
       );
+    }
 
     case "stats":
       return (
