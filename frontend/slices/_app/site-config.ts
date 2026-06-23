@@ -26,9 +26,9 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   brandLetter: "K",
   brandName: "Kreator Studio",
   tagline: "Multi-channel content planner + voice trainer + repurposing engine.",
-  ownerName: "Lorem Kreator",
+  ownerName: "Kirana Wijaya",
   ownerRole: "creator",
-  ownerInitials: "LK",
+  ownerInitials: "KW",
   description:
     "Kreator Studio — workspace untuk content creator Indonesia. Plan multi-channel, train brand voice, repurpose otomatis dari satu source.",
   baseUrl: "https://kreator.dev",

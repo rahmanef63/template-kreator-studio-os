@@ -10,7 +10,7 @@ import { Reveal, Stagger } from "@/features/_shared/motion";
 import { PUBLIC_BASE } from "@/features/_app/nav-config";
 import { usePrinciples, useTimeline } from "@/features/_app/store";
 
-const DEFAULT_HEADLINE = "Lorem Kreator — full-time creator dari Indonesia.";
+const DEFAULT_HEADLINE = "Kirana Wijaya — full-time creator dari Indonesia.";
 const DEFAULT_INTRO =
   "Saya bantu creator dan small business build audience yang berarti — bukan vanity metrics. Newsletter ini adalah catatan apa yang saya pelajari minggu ini.";
 

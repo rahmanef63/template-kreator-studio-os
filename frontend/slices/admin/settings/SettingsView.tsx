@@ -164,7 +164,7 @@ export function SettingsView() {
           <h3 className="text-base font-medium">About page</h3>
           <div>
             <Label className="text-xs">Judul / headline</Label>
-            <Input value={aboutHeadline} onChange={(e) => setAboutHeadline(e.target.value)} placeholder="Lorem Kreator — full-time creator dari Indonesia." className="mt-1" />
+            <Input value={aboutHeadline} onChange={(e) => setAboutHeadline(e.target.value)} placeholder="Kirana Wijaya — full-time creator dari Indonesia." className="mt-1" />
           </div>
           <div>
             <Label className="text-xs">Bio / intro</Label>

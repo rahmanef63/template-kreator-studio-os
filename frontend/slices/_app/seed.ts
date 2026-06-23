@@ -36,7 +36,7 @@ export const SEED_CONTENTS: ContentItem[] = [
     channel: "instagram",
     status: "scheduled",
     hook: "Yang nomor 3 mungkin bikin kamu kaget.",
-    body: "Lorem ipsum dolor sit amet — list 5 trik produktivitas yang jarang dibahas tapi efeknya gede.",
+    body: "List 5 trik produktivitas yang jarang dibahas tapi efeknya gede — batching, time-blocking, sistem inbox-zero, dan dua kebiasaan kecil yang menghemat satu jam tiap hari.",
     scheduledAt: future(2),
     views: 0,
     likes: 0,

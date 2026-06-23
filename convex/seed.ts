@@ -2,6 +2,7 @@ import { mutation, internalMutation } from "./_generated/server";
 import { ConvexError } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { requireUser } from "./_shared/auth";
+import { HERO, STATS, FEATURES, FAQS } from "./landingContent";
 
 // Demo seed for Kreator Studio OS.
 // - `seed:run`        — CLI/power use: wipes content then inserts (npx convex run seed:run).
@@ -15,7 +16,7 @@ const day = (n: number) => now - n * 24 * 60 * 60 * 1000;
 const future = (n: number) => now + n * 24 * 60 * 60 * 1000;
 
 const CONTENTS = [
-  { title: "5 trik produktivitas yang underrated", channel: "instagram" as const, status: "scheduled" as const, hook: "Yang nomor 3 mungkin bikin kamu kaget.", body: "Lorem ipsum dolor sit amet — list 5 trik produktivitas yang jarang dibahas tapi efeknya gede.", scheduledAt: future(2), views: 0, likes: 0 },
+  { title: "5 trik produktivitas yang underrated", channel: "instagram" as const, status: "scheduled" as const, hook: "Yang nomor 3 mungkin bikin kamu kaget.", body: "List 5 trik produktivitas yang jarang dibahas tapi efeknya gede — batching, time-blocking, sistem inbox-zero, dan dua kebiasaan kecil yang menghemat satu jam tiap hari.", scheduledAt: future(2), views: 0, likes: 0 },
   { title: "Cara saya plan content 1 minggu dalam 1 jam", channel: "tiktok" as const, status: "published" as const, hook: "POV: kamu bisa plan seminggu cuma 1 jam.", body: "Step by step bikin content calendar pakai sistem batching.", scheduledAt: day(3), views: 48200, likes: 3140 },
   { title: "Why your newsletter ga grow", channel: "newsletter" as const, status: "draft" as const, hook: "Bukan karena writing kamu jelek.", body: "Analisis 5 alasan utama newsletter kamu stagnan dan cara fix-nya.", scheduledAt: 0, views: 0, likes: 0 },
 ];
@@ -160,15 +161,20 @@ const TIMELINE = [
 // Keep in sync with components/templates/kreator-studio/shared/landing-seed.ts
 // SEED_LANDING_SECTIONS. `syncLanding` below pushes additions/order to an
 // already-seeded deployment without touching admin-edited copy.
+// Item-bearing sections (stats/features/faq) seed their example content into
+// `config` from convex/landingContent.ts — the SAME module the frontend render
+// falls back to — so a fresh clone gets editable example data and there is no
+// convex<->render drift. Table-backed kinds (portfolio/services/testimonials/
+// pricing/blog/changelog) render from their own tables and carry no item config.
 const LANDING = [
-  { id: "ls-hero", order: 10, kind: "hero", title: "Newsletter & content notes untuk creator yang serius.", subtitle: "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.", enabled: true, config: '{"badge":"Issue mingguan untuk creator"}', layers: [{ id: "hero-photo", type: "image", placement: "background", opacity: 100, enabled: true, url: "/hero.webp" }] },
-  { id: "ls-stats", order: 15, kind: "stats", title: "Angka yang jalan tiap minggu", subtitle: "Subscribers, views, dan brand yang sudah collab — live dari workspace ini.", enabled: true },
-  { id: "ls-features", order: 20, kind: "features", title: "Apa yang ada di balik newsletter ini", subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.", enabled: true },
+  { id: "ls-hero", order: 10, kind: "hero", title: HERO.title, subtitle: HERO.subtitle, enabled: true, config: JSON.stringify({ badge: HERO.badge }), layers: [{ id: "hero-photo", type: "image", placement: "background", opacity: 100, enabled: true, url: "/hero.webp" }] },
+  { id: "ls-stats", order: 15, kind: "stats", title: "Angka yang jalan tiap minggu", subtitle: "Subscribers, views, dan brand yang sudah collab — live dari workspace ini.", enabled: true, config: JSON.stringify({ stats: STATS }) },
+  { id: "ls-features", order: 20, kind: "features", title: "Apa yang ada di balik newsletter ini", subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.", enabled: true, config: JSON.stringify({ items: FEATURES }) },
   { id: "ls-portfolio", order: 30, kind: "portfolio", title: "Highlight social posts", subtitle: "Yang paling resonance bulan ini di IG, TikTok, dan YouTube.", enabled: true },
   { id: "ls-showcase", order: 35, kind: "services", title: "Karya & campaign terpilih", subtitle: "Carousel, video, dan campaign yang perform paling kuat.", enabled: true, config: '{"limit":3}' },
   { id: "ls-testimonials", order: 40, kind: "testimonials", title: "Kata mereka yang sudah kerja bareng", subtitle: "Brand, klien, dan reader newsletter — real words, real outcomes.", enabled: true, config: '{"limit":6}' },
   { id: "ls-pricing", order: 45, kind: "pricing", title: "Paket kerja sama", subtitle: "Newsletter sponsor, carousel pack, sampai custom production — semua transparan.", enabled: true },
-  { id: "ls-faq", order: 50, kind: "faq", title: "Sering ditanya brand & creator", subtitle: "Soal kolaborasi, rate card, lisensi konten, dan timeline produksi.", enabled: true },
+  { id: "ls-faq", order: 50, kind: "faq", title: "Sering ditanya brand & creator", subtitle: "Soal kolaborasi, rate card, lisensi konten, dan timeline produksi.", enabled: true, config: JSON.stringify({ items: FAQS }) },
   { id: "ls-blog", order: 55, kind: "blog", title: "Issue terbaru", subtitle: "Klik untuk baca arsip lengkap.", enabled: true, config: '{"limit":3}' },
   { id: "ls-journal", order: 60, kind: "changelog", title: "Journal — di balik layar", subtitle: "Lesson, eksperimen, dan essay panjang di luar feed newsletter.", enabled: true, config: '{"limit":3}' },
   { id: "ls-cta", order: 65, kind: "cta", title: "Mau bikin campaign yang resonance?", subtitle: "Brief call 15 menit, gratis — saya bantu rekomendasi format yang fit.", enabled: true },

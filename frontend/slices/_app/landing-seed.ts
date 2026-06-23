@@ -5,17 +5,21 @@
 // All copy/order/visibility admin-editable via /admin → Landing page.
 
 import type { LandingSection } from "@/features/_shared/landing/types";
+import { HERO, STATS, FEATURES, FAQS } from "@/convex/landingContent";
 
+// Item-bearing sections (stats/features/faq) and the hero copy derive their
+// content from convex/landingContent.ts — the SAME single-source module the
+// convex seed reads — so this render fallback never drifts from what gets
+// seeded into Convex `config`. Edit content in that module, not here.
 export const SEED_LANDING_SECTIONS: LandingSection[] = [
   {
     id: "ls-hero",
     order: 10,
     kind: "hero",
-    title: "Newsletter & content notes untuk creator yang serius.",
-    subtitle:
-      "Tiap minggu — strategi konten, breakdown viral hits, dan template yang bisa kamu pakai langsung.",
+    title: HERO.title,
+    subtitle: HERO.subtitle,
     enabled: true,
-    config: '{"badge":"Issue mingguan untuk creator"}',
+    config: JSON.stringify({ badge: HERO.badge }),
     layers: [
       { id: "hero-photo", type: "image", placement: "background", opacity: 100, enabled: true, url: "/hero.webp" },
     ],
@@ -27,6 +31,7 @@ export const SEED_LANDING_SECTIONS: LandingSection[] = [
     title: "Angka yang jalan tiap minggu",
     subtitle: "Subscribers, views, dan brand yang sudah collab — live dari workspace ini.",
     enabled: true,
+    config: JSON.stringify({ stats: STATS }),
   },
   {
     id: "ls-features",
@@ -35,6 +40,7 @@ export const SEED_LANDING_SECTIONS: LandingSection[] = [
     title: "Apa yang ada di balik newsletter ini",
     subtitle: "Workspace kreator yang sama saya pakai untuk produce content tiap minggu.",
     enabled: true,
+    config: JSON.stringify({ items: FEATURES }),
   },
   {
     id: "ls-portfolio",
@@ -77,6 +83,7 @@ export const SEED_LANDING_SECTIONS: LandingSection[] = [
     title: "Sering ditanya brand & creator",
     subtitle: "Soal kolaborasi, rate card, lisensi konten, dan timeline produksi.",
     enabled: true,
+    config: JSON.stringify({ items: FAQS }),
   },
   {
     id: "ls-blog",
