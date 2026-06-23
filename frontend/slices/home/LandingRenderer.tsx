@@ -69,6 +69,7 @@ export function renderLanding(section: LandingSection, deps: Deps) {
       return (
         <LandingSectionShell section={section}>
           <HeroBlock
+            align={cfgString(cfg, "align") === "center" ? "center" : "left"}
             glow
             layers={section.layers}
             shade={section.shade}
