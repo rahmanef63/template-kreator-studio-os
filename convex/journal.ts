@@ -15,12 +15,6 @@ export const list = query({
     ctx.db.query("kreatorJournal").withIndex("by_publishedAt").order("desc").take(200),
 });
 
-export const bySlug = query({
-  args: { slug: v.string() },
-  handler: async (ctx, { slug }) =>
-    ctx.db.query("kreatorJournal").withIndex("by_slug", (q) => q.eq("slug", slug)).first(),
-});
-
 export const upsert = mutation({
   args: {
     id: v.optional(v.id("kreatorJournal")),

@@ -216,5 +216,11 @@ export type Action =
   | { type: "principle.delete"; id: string }
   | { type: "timeline.upsert"; entry: TimelineEntry }
   | { type: "timeline.delete"; id: string }
+  | { type: "monetizationSource.upsert"; source: MonetizationSource }
+  | { type: "monetizationSource.delete"; id: string }
+  | { type: "monetizationMonth.upsert"; month: MonetizationMonth }
+  | { type: "monetizationMonth.delete"; id: string }
+  | { type: "payout.upsert"; payout: Payout }
+  | { type: "payout.delete"; id: string }
   | { type: "hydrate"; state: State }
   | { type: "reset" };

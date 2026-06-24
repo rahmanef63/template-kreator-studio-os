@@ -79,6 +79,12 @@ export function useConvexDispatch(state: State): (a: Action) => void {
   const mPrincipleRemove = useMutation(api.principles.remove);
   const mTimelineUpsert = useMutation(api.timeline.upsert);
   const mTimelineRemove = useMutation(api.timeline.remove);
+  const mMonSourceUpsert = useMutation(api.monetization.upsertSource);
+  const mMonSourceRemove = useMutation(api.monetization.removeSource);
+  const mMonMonthUpsert = useMutation(api.monetization.upsertMonth);
+  const mMonMonthRemove = useMutation(api.monetization.removeMonth);
+  const mPayoutUpsert = useMutation(api.monetization.upsertPayout);
+  const mPayoutRemove = useMutation(api.monetization.removePayout);
 
   const knownIds = React.useMemo(
     () => ({
@@ -97,6 +103,9 @@ export function useConvexDispatch(state: State): (a: Action) => void {
       featuredClients: new Set(state.featuredClients.map((f) => f.id)),
       principles: new Set(state.principles.map((p) => p.id)),
       timeline: new Set(state.timeline.map((t) => t.id)),
+      monetizationSources: new Set(state.monetizationSources.map((s) => s.id)),
+      monetizationMonths: new Set(state.monetizationMonths.map((m) => m.id)),
+      payouts: new Set(state.payouts.map((p) => p.id)),
     }),
     [state],
   );
@@ -307,6 +316,42 @@ export function useConvexDispatch(state: State): (a: Action) => void {
         }
         case "timeline.delete":
           void mTimelineRemove({ id: action.id as Id<"kreatorTimeline"> }).catch(fail);
+          break;
+
+        case "monetizationSource.upsert": {
+          const { id, ...d } = action.source;
+          void (knownIds.monetizationSources.has(id)
+            ? mMonSourceUpsert({ id: id as Id<"kreatorMonetizationSources">, ...d })
+            : mMonSourceUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "monetizationSource.delete":
+          void mMonSourceRemove({ id: action.id as Id<"kreatorMonetizationSources"> }).catch(fail);
+          break;
+
+        case "monetizationMonth.upsert": {
+          const { id, ...d } = action.month;
+          void (knownIds.monetizationMonths.has(id)
+            ? mMonMonthUpsert({ id: id as Id<"kreatorMonetizationMonths">, ...d })
+            : mMonMonthUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "monetizationMonth.delete":
+          void mMonMonthRemove({ id: action.id as Id<"kreatorMonetizationMonths"> }).catch(fail);
+          break;
+
+        case "payout.upsert": {
+          const { id, ...d } = action.payout;
+          void (knownIds.payouts.has(id)
+            ? mPayoutUpsert({ id: id as Id<"kreatorPayouts">, ...d })
+            : mPayoutUpsert(d)
+          ).catch(fail);
+          break;
+        }
+        case "payout.delete":
+          void mPayoutRemove({ id: action.id as Id<"kreatorPayouts"> }).catch(fail);
           break;
 
         case "LANDING_UPSERT": {

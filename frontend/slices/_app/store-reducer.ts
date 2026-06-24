@@ -120,6 +120,22 @@ export function reducer(state: State, action: Action): State {
     case "timeline.delete":
       return { ...state, timeline: removeById(state.timeline, action.id) };
 
+    // ---- Monetization domain ----
+    case "monetizationSource.upsert":
+      return { ...state, monetizationSources: upsertById(state.monetizationSources, action.source) };
+    case "monetizationSource.delete":
+      return { ...state, monetizationSources: removeById(state.monetizationSources, action.id) };
+
+    case "monetizationMonth.upsert":
+      return { ...state, monetizationMonths: upsertById(state.monetizationMonths, action.month) };
+    case "monetizationMonth.delete":
+      return { ...state, monetizationMonths: removeById(state.monetizationMonths, action.id) };
+
+    case "payout.upsert":
+      return { ...state, payouts: upsertById(state.payouts, action.payout) };
+    case "payout.delete":
+      return { ...state, payouts: removeById(state.payouts, action.id) };
+
     // ---- Bulk ----
     case "hydrate":
       return action.state;
