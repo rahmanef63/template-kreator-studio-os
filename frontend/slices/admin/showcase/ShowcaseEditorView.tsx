@@ -27,7 +27,7 @@ export const FIELDS: FieldDef<ShowcaseItem>[] = [
   { kind: "text", key: "metric", label: "Metric", placeholder: "1.2M views" },
   { kind: "text", key: "gradient", label: "Gradient", mono: true, placeholder: "from-fuchsia-500 to-purple-600" },
   { kind: "text", key: "emoji", label: "Emoji", placeholder: "🎬" },
-  { kind: "image", key: "image", label: "Image URL", wide: true },
+  { kind: "imagePicker", key: "image", label: "Image", wide: true },
   { kind: "date", key: "publishedAt", label: "Published" },
 ];
 
